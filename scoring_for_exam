@@ -1,0 +1,31 @@
+# 문항 배점 : a, b, c
+# 문항 점수 총합 : N
+# 총 문항 수 : n
+# ax+by+cz = N
+# x+y+z = n
+# 이 식을 만족하는 x, y, z 순서쌍 모두 구하기
+
+######### 총 배점의 합, 문항 수, 가능한 배점 설정하기###########################
+N = 80; n = 20; score = [3,4,5]
+
+
+from sympy.solvers import solve
+from sympy import Symbol
+
+for z in range(n):
+  # z 값에 따라 방정식 풀기
+  x = Symbol('x')
+  y = Symbol('y')
+  equation1 = score[0]*x + score[1]*y + score[2]*z - N
+  equation2 = x+y+z - n
+  sol = solve((equation1, equation2))
+
+  # 해 저장하기
+  final_sol = []
+  for value in sol.values():
+      final_sol.append(value)
+  final_sol.append(z)
+
+  # 음수인 경우 제외
+  if final_sol[0]*final_sol[1] >= 0:
+    print(final_sol)

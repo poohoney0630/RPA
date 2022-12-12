@@ -4,12 +4,13 @@ N = int(input("배점 총 합 :"))
 n = int(input("총 문항 수 :"))
 score = list(map(float, input("문항 배점 리스트(2,3,4,5,6과 같이 수로만 입력해주세요.) :").split(",")))
 
+# 배점당 2문제 이상은 있도록 설정(range(2, n-1))
 for s in range(2,n-1):
   for w in range(2,n-1):
     for z in range(2,n-1):
       for y in range(2,n-1):
         for x in range(2,n-1):
-          if (x+y+z+w+s == n)&(score[0]*x+score[1]*y+score[2]*z+score[3]*w+score[4]*s== N)&(z>=np.floor(n/5)) :
+          if (x+y+z+w+s == n)&(score[0]*x+score[1]*y+score[2]*z+score[3]*w+score[4]*s== N)&(z>=np.floor(n/5)) : # 배점이 중간인 문항 수가 나머지보다 적지는 않게
             print(x,y,z,w,s)
 
           else :

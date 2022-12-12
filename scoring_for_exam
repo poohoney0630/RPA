@@ -1,31 +1,20 @@
-# 문항 배점 : a, b, c
-# 문항 점수 총합 : N
-# 총 문항 수 : n
-# ax+by+cz = N
-# x+y+z = n
-# 이 식을 만족하는 x, y, z 순서쌍 모두 구하기
+import numpy as np
 
-######### 총 배점의 합, 문항 수, 가능한 배점 설정하기###########################
-N = 80; n = 20; score = [3,4,5]
+N = int(input("배점 총 합 :"))
+n = int(input("총 문항 수 :"))
+score = list(map(float, input("문항 배점 리스트(2,3,4,5,6과 같이 수로만 입력해주세요.) :").split(",")))
 
+for s in range(2,n-1):
+  for w in range(2,n-1):
+    for z in range(2,n-1):
+      for y in range(2,n-1):
+        for x in range(2,n-1):
+          if (x+y+z+w+s == n)&(score[0]*x+score[1]*y+score[2]*z+score[3]*w+score[4]*s== N)&(z>=np.floor(n/5)) :
+            print(x,y,z,w,s)
 
-from sympy.solvers import solve
-from sympy import Symbol
+          else :
+            continue
 
-for z in range(n):
-  # z 값에 따라 방정식 풀기
-  x = Symbol('x')
-  y = Symbol('y')
-  equation1 = score[0]*x + score[1]*y + score[2]*z - N
-  equation2 = x+y+z - n
-  sol = solve((equation1, equation2))
-
-  # 해 저장하기
-  final_sol = []
-  for value in sol.values():
-      final_sol.append(value)
-  final_sol.append(z)
-
-  # 음수인 경우 제외
-  if final_sol[0]*final_sol[1] >= 0:
-    print(final_sol,'\t', sum(final_sol)==n, 3*sum(final_sol) + final_sol[1]+2*final_sol[2]==N)
+#sample
+# 3.6, 3.8, 4.0, 4.2, 4.4
+# 4.1, 4.3, 4.5, 4.7, 4.9

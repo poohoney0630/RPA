@@ -15,7 +15,7 @@ for s in range(2,n-1):
 
           else :
             continue
-
+print("hi")
 #sample
 # 3.6, 3.8, 4.0, 4.2, 4.4
 # 4.1, 4.3, 4.5, 4.7, 4.9

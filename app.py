@@ -18,13 +18,17 @@ import time
 def intro():
 
     st.write("# 😎Welcome to RPA in SCHOOL! 👋")
-    st.sidebar.success("Select a demo above.")
-    st.write('made by 숩숩')
+    st.sidebar.success("페이지를 선택해주세요!")
+    st.write("### **학교에서 반복적이고 기계적인 일을 적게 할 수는 없을까?**")
+    st.write("라는 고민(투덜)으로 시작한 업무자동화 페이지입니다. 학교에서 업무 효율화를 통해 교사의 전문성이 필요한 수업 평가, 기록의 질에 고민할 수 있는 시간을 확보하기 위해서죠!")
+    st.write("학교에서 업무나 수업 중 느끼는 '불편함'이 바로 업무자동화 '아이디어'입니다. ")
+    st.write("모바일로 들어오셨을 경우 : 왼쪽 상단의 '>' 버튼을 클릭하여 페이지를 이동해주세요.")
+    st.write('made by **숩숩** ✉sbhath17@gmail.com')
 
 # 1. 시험문제 배점 정하기 페이지
 def scoring_for_exam():
     # 페이지 설명 부분
-    st.write("## 1. 시험문제📝 배점별 문항 수 설정하기")
+    st.write("## 1. 시험문제 배점별 문항 수 설정하기📝")
     st.write("배점 총 합과 문항수, 배점 리스트를 입력해주시면 가능한 배점별 문항 수가 출력됩니다. ")
     st.write("시험문제 낼 때, 협의시간을 줄여보세요!")
 
@@ -119,68 +123,70 @@ def scoring_for_exam():
 
 def book_recording():
     # 페이지 설명 부분
-    st.write("## 2. 학교생활기록부 독서기록📚 중복 찾기")
+    st.write("## 2. 학교생활기록부 독서기록 중복 찾기📚")
     st.write("생활기록부 점검시, 학생마다 독서기록이 중복된 경우가 왕왕 있습니다.")
     st.write("예를 들어 한 학생이 2학년 1학기와 1학년 1학기에 같은 책을 기록한 경우죠! ")
     st.write("나이스에서 반별 독서기록파일을 csv파일로 다운받아, 아래에 업로드해주세요. 중복된 항목이 출력됩니다. ")
     uploaded_file = st.file_uploader("Choose a file")
-    
-    df = pd.DataFrame(pd.read_csv(uploaded_file).values[3:,:6])
-    df.columns = ["name","section", "year", "grade","sem","book"]#column 이름 지정
-    df = df.dropna(how='all')#모든 칸이 nan인 행 지우기
-    df = df.fillna(method='ffill') #행별로 이름 채우기(전 행의 이름과 동일함)
-    df.drop(df[df['name'] =='이  름'].index, inplace = True) #페이지 넘어갈 때 있는 열이름 삭제
-    original = df.values.tolist() #list로
-    pd.options.display.max_colwidth = 100
-    st.write(df.head(3))
+    try:
+        df = pd.DataFrame(pd.read_csv(uploaded_file).values[3:,:6])
+        df.columns = ["name","section", "year", "grade","sem","book"]#column 이름 지정
+        df = df.dropna(how='all')#모든 칸이 nan인 행 지우기
+        df = df.fillna(method='ffill') #행별로 이름 채우기(전 행의 이름과 동일함)
+        df.drop(df[df['name'] =='이  름'].index, inplace = True) #페이지 넘어갈 때 있는 열이름 삭제
+        original = df.values.tolist() #list로
+        pd.options.display.max_colwidth = 100
+        st.write(df.head(3))
 
-    # 중복된 부분 찾기 (1) 책이름과 저자명이 완벽히 일치
-    for student in df.name.unique():
-      #학생별로 도서명 문자열로 담기
-      temp = df[df.name==student]
-      all_book = temp.book.tolist()
-      book_list_incomplete = []
-      for book_by_row in all_book :   
-        book_list_incomplete = book_list_incomplete+book_by_row.split("), ")
+        # 중복된 부분 찾기 (1) 책이름과 저자명이 완벽히 일치
+        for student in df.name.unique():
+          #학생별로 도서명 문자열로 담기
+          temp = df[df.name==student]
+          all_book = temp.book.tolist()
+          book_list_incomplete = []
+          for book_by_row in all_book :   
+            book_list_incomplete = book_list_incomplete+book_by_row.split("), ")
 
-      #print("1. " , book_list_incomplete)
+          #print("1. " , book_list_incomplete)
 
-      # 빈 문자열 원소 제거 및 괄호 처리하기
-      book_list = []
-      for book in book_list_incomplete:
-        if len(book)==0:
-          continue
-        elif book[-1]==")":
-          book_list.append(book)
-        else:
-          book_list.append(book+")")
-      #print("2. " , book_list)
+          # 빈 문자열 원소 제거 및 괄호 처리하기
+          book_list = []
+          for book in book_list_incomplete:
+            if len(book)==0:
+              continue
+            elif book[-1]==")":
+              book_list.append(book)
+            else:
+              book_list.append(book+")")
+          #print("2. " , book_list)
 
-      # 중복 횟수 세기
-      book_count={}
-      lists = book_list
-      for i in lists:
-          try: book_count[i] += 1
-          except: book_count[i]=1
-      #print("3. " , book_count)
+          # 중복 횟수 세기
+          book_count={}
+          lists = book_list
+          for i in lists:
+              try: book_count[i] += 1
+              except: book_count[i]=1
+          #print("3. " , book_count)
 
-      # 중복 횟수가 2 이상인 아이템의 key만 담기
-      book_duplicated = []
-      for k, v in book_count.items():
-          if v >= 2: 
-              book_duplicated.append(k)
-      #print("4. " , book_duplicated)
+          # 중복 횟수가 2 이상인 아이템의 key만 담기
+          book_duplicated = []
+          for k, v in book_count.items():
+              if v >= 2: 
+                  book_duplicated.append(k)
+          #print("4. " , book_duplicated)
 
-      # 출력하기
-      if len(book_duplicated)>0:
-        st.write('\n',student, "학생의 중복된 항목이 있습니다.:")
-        for book in book_duplicated:
-            st.write(">>",book)
-        st.write('>> 다음 영역 중에서 찾아보세요.')
-        for i in range(len(book_duplicated)):
-          st.write(temp[temp['book'].str.contains(book_duplicated[i][:2])]) 
-      else:
-        continue
+          # 출력하기
+          if len(book_duplicated)>0:
+            st.write('\n',student, "학생의 중복된 항목이 있습니다.:")
+            for book in book_duplicated:
+                st.write(">>",book)
+            st.write('>> 다음 영역 중에서 찾아보세요.')
+            for i in range(len(book_duplicated)):
+              st.write(temp[temp['book'].str.contains(book_duplicated[i][:2])]) 
+          else:
+            continue
+    except:
+        print(":D")
 
 
 ####################################################
@@ -190,5 +196,5 @@ page_names_to_funcs = {
     "2. 학교생활기록부 독서기록 중복 찾기": book_recording 
 }
 
-demo_name = st.sidebar.selectbox("페이지를 이동해주세요.", page_names_to_funcs.keys())
+demo_name = st.sidebar.selectbox("업무자동화 페이지", page_names_to_funcs.keys())
 page_names_to_funcs[demo_name]()

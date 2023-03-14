@@ -113,7 +113,7 @@ def scoring_for_exam():
     #####################################################################
     nb_of_item(scorelist, int(N),int(n))
     st.write("열 이름(배점)을 클릭하면 오름차순/내림차순으로 정렬됩니다.")
-    st.write("일반적으로, 난이도 중인 문항 수가 가장 많긴 하죠?:D")
+    st.write("일반적으로, 난이도 중인 문항 수가 가장 많으므로 난이도 '중'인 배점을 기준으로 정렬하는 것이 좋겠네요!")
 
 
 
@@ -181,15 +181,13 @@ def book_recording():
           st.write(temp[temp['book'].str.contains(book_duplicated[i][:2])]) 
       else:
         continue
-        
-
 
 
 ####################################################
 page_names_to_funcs = {
     "소개글": intro,
     "1. 시험 문제 배점 정하기": scoring_for_exam, 
-    "2. 학교생활기록부 독서기록 중복 찾기": book_recording
+    "2. 학교생활기록부 독서기록 중복 찾기": book_recording 
 }
 
 demo_name = st.sidebar.selectbox("페이지를 이동해주세요.", page_names_to_funcs.keys())

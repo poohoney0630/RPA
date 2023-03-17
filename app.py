@@ -4,6 +4,7 @@ import pandas as pd
 import streamlit as st
 import datetime
 import time
+import seaborn as sns
 
 # 별도 페이지 만들기
 
@@ -192,81 +193,29 @@ def book_recording():
 
 
 def prediction():
-
-    import pandas as pd
-    import numpy as np
-
     # 10명의 선수와 10번의 게임에 대한 기록을 갖는 데이터 프레임을 생성합니다.
     df = pd.DataFrame(np.random.randint(0, 2, size=(10, 10)),
                     columns=['game_{}'.format(i) for i in range(1, 11)],
                     index=['player_{}'.format(i) for i in range(1, 11)])
 
-    # 데이터 프레임을 csv 파일로 저장합니다.
-    df.to_csv('sample_data.csv', index=True)
-
-
-    import pandas as pd
     from sklearn.model_selection import train_test_split
     from sklearn.linear_model import LogisticRegression
-
-    # 데이터를 불러와서 전처리하는 함수를 정의합니다.
-    def load_and_preprocess_data(data_path):
-        # 데이터 파일을 불러옵니다.
-        df = pd.read_csv(data_path, index_col=0)
-
-        # 데이터를 학습용과 테스트용으로 분리합니다.
-        X_train, X_test, y_train, y_test = train_test_split(df.iloc[:, :-1], df.iloc[:, -1], test_size=0.2, random_state=42)
-
-        # 로지스틱 회귀 모델을 초기화합니다.
-        clf = LogisticRegression()
-
-        # 학습용 데이터로 모델을 학습시킵니다.
-        clf.fit(X_train, y_train)
-
-        return clf, X_test, y_test
-
-    import streamlit as st
-
-    # 데이터를 불러와서 전처리하는 함수를 정의합니다.
-    def load_and_preprocess_data(data_path):
-        # 데이터 파일을 불러옵니다.
-        df = pd.read_csv(data_path, index_col=0)
-
-        # 데이터를 학습용과 테스트용으로 분리합니다.
-        X_train, X_test, y_train, y_test = train_test_split(df.iloc[:, :-1], df.iloc[:, -1], test_size=0.2, random_state=42)
-
-        # 로지스틱 회귀 모델을 초기화합니다.
-        clf = LogisticRegression()
-
-        # 학습용 데이터로 모델을 학습시킵니다.
-        clf.fit(X_train, y_train)
-
-        return clf, X_test, y_test
-
-
-    def main():
-        # 샘플 데이터 경로를 지정합니다.
-        data_path = 'sample_data.csv'
-
-        # 데이터를 불러와서 전처리합니다.
-        clf, X_test, y_test = load_and_preprocess_data(data_path)
-
-        # streamlit 앱을 구성합니다.
-        st.title("승률 예측 프로그램")
-
-        st.write("학습용 데이터 샘플:")
-        st.dataframe(X_test.head())
-
-        # 모델의 정확도를 계산합니다.
-        score = clf.score(X_test, y_test)
-
-        st.write("모델의 정확도:", score)
-
-        # 새로운 데이터를 입력
-    import streamlit as st
-    import pandas as pd
     from sklearn.ensemble import RandomForestClassifier
     from sklearn.model_selection import train_test_split
+    # 데이터를 불러와서 전처리하는 함수를 정의합니다.
+    def load_and_preprocess_data(data_path):
+        # 데이터 파일을 불러옵니다.
+        df = pd.read_csv(data_path, index_col=0)
+
+        # 데이터를 학습용과 테스트용으로 분리합니다.
+        X_train, X_test, y_train, y_test = train_test_split(df.iloc[:, :-1], df.iloc[:, -1], test_size=0.2, random_state=42)
+
+        # 로지스틱 회귀 모델을 초기화합니다.
+        clf = LogisticRegression()
+
+        # 학습용 데이터로 모델을 학습시킵니다.
+        clf.fit(X_train, y_train)
+        return clf, X_test, y_test
 
     # 샘플 데이터 생성
     data = {'player1': [1, 0, 1, 1, 1, 0, 0, 0, 1, 0],
@@ -319,13 +268,23 @@ def prediction():
     else:
         st.write('This team is likely to lose with {}% probability.'.format(int((1-accuracy)*100)))
 
+def datavisualization():
+    import matplotlib.pyplot as plt
+
+    titanic = sns.load_dataset("titanic")
+    st.write(titanic.head(5))
+    fig = plt.figure(figsize=(10, 4))
+    sns.histplot(x=titanic['age'])
+    st.pyplot(fig)
+
 
 ####################################################
 page_names_to_funcs = {
     "소개글": intro,
     "1. 시험 문제 배점 정하기": scoring_for_exam, 
     "2. 학교생활기록부 독서기록 중복 찾기": book_recording ,
-    "3. (시험중)승률 예측": prediction
+    "3. (시험중)승률 예측": prediction,
+    "4. (시험중)Data Visualization": datavisualization
 }
 
 demo_name = st.sidebar.selectbox("업무자동화 페이지", page_names_to_funcs.keys())

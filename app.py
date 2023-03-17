@@ -4,7 +4,6 @@ import pandas as pd
 import streamlit as st
 import datetime
 import time
-import seaborn as sns
 
 # 별도 페이지 만들기
 
@@ -269,6 +268,7 @@ def prediction():
         st.write('This team is likely to lose with {}% probability.'.format(int((1-accuracy)*100)))
 
 def datavisualization():
+    import seaborn as sns
     import matplotlib.pyplot as plt
 
     titanic = sns.load_dataset("titanic")

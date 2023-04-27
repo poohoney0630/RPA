@@ -4,7 +4,8 @@ import pandas as pd
 import streamlit as st
 import datetime
 import time
-import scikit-learn as sklearn
+import random
+
 # 별도 페이지 만들기
 
 # 업무자동화
@@ -197,7 +198,6 @@ def book_recording():
     except:
         print(":D")
 
-
 def prediction():
     # 10명의 선수와 10번의 게임에 대한 기록을 갖는 데이터 프레임을 생성합니다.
     df = pd.DataFrame(np.random.randint(0, 2, size=(10, 10)),
@@ -284,15 +284,193 @@ def datavisualization():
     sns.histplot(x=titanic['age'])
     st.pyplot(fig)
 
+def group_making():
+    st.write("## 3. 학생들의 특성을 바탕으로 조 편성하기🤼‍♂️")
+    st.write("수업 등에서 모둠을 구성할 때, 일반적으로 랜덤으로 편성을 많이 합니다. 하지만 가끔 경우에 따라 학생들의 특성에 따라 조를 편성하면 좋은 경우가 있습니다. 예를 들어 모둠별로 문제를 해결해야 하는 수업에서 점수가 낮은 학생들만 모여있다면 원활하게 진행되지 않겠죠? 혹은, 학생들의 특성이 어느정도는 달라야 서로 상호작용을 하며 배우는 것이 더 많을텐데요! 이러한 점을 고려해서 모둠을 편성하는 예시입니다. 완성된 결과를 보고, 꼭 검토 후 사용해주세요!")
+    
+    # 이름 생성하기
+    def generate_names(n):
+        first_names = ['가', '나', '다', '라', '마', '바', '사', '아', '자', '차', '카', '타', '파', '하']
+        last_names = ['김', '이', '박', '최', '정', '강', '조', '윤', '장', '임', '한', '오', '서', '신', '권', '황', '안', '송', '류', '전', '홍', '문', '양']
+        names = []
+        while len(names) < n:
+            first = random.choice(first_names)
+            last = random.choice(last_names)
+            name = last + first + random.choice(first_names)
+            if name not in names:
+                names.append(name)
+        return names
+
+    # n명을 k개 그룹으로 나눌 때 조별 인원수 리스트
+    def divide_n_into_k_parts(n, k):
+        quotient = n // k
+        remainder = n % k
+
+        sizes = [quotient] * k
+        for i in range(remainder):
+            sizes[i] += 1
+
+        intervals = []
+        start = 0
+        for size in sizes:
+            end = start + size
+            intervals.append(size)
+            start = end
+
+        return intervals
+    
+    # sample data(df) 생성하기
+    #np.random.seed(42)
+    n_students = 30
+    names = generate_names(n_students)
+    scores = np.round(np.random.normal(loc=50, scale=18, size=n_students))
+    scores = np.clip(scores, 0, 100)
+    grades = np.random.choice(['A', 'B', 'C', 'D'], size=n_students, p=[0.3, 0.3, 0.2, 0.2])
+    data = {'이름': names, '점수': scores, '특성': grades}
+    sample_data = pd.DataFrame(data)
+    df = sample_data
+    st.write('(파일 업로드 기능 보완 예정)')
+    uploaded_file = st.file_uploader("파일 업로드해주세요! 준비된 파일이 없을 경우, 아래 '샘플 파일 업로드 해보기' 버튼을 눌러 테스트해보세요.", type="csv")
+
+    if st.button('샘플 파일 업로드 해보기'):
+        uploaded_file = sample_data
+        st.write('샘플 파일 업로드 완료! {}명의 학생입니다. 데이터는 버튼을 누를 때마다 리셋됩니다.  '.format(len(sample_data)))
+        st.write(sample_data)
+    # 파일 업로드
+    # if uploaded_file is None:
+    #     if st.button('샘플 파일 업로드 해보기'):
+    #         uploaded_file = sample_data
+    #         st.write(sample_data)
+    #         st.write('샘플 파일 업로드 완료!')
+    # try:
+    #     df = pd.DataFrame(uploaded_file.values[:,:])
+    #     st.write(df)
+    # except:
+    #     print(":D")
+    k = int(st.text_input('모둠 수를 입력하세요:', value = 8)) # 그룹의 개수
+    n = len(df)
+    nb_of_st_list = divide_n_into_k_parts(n, k)
+    if st.button('랜덤 모둠 편성'):
+        st.write('랜덤으로 모둠을 편성합니다.')
+        n = len(df)
+        # 인원수 리스트 생성
+        
+        # 랜덤 셔플
+        sample_random = df.sample(frac = 1).reset_index(drop=True)
+        # 그룹 부여
+        sample_random['group'] = 0
+        # 리스트 nb_of_st_list를 사용하여 'group' 열에 값을 할당
+        start = 0
+        for i, nb in enumerate(nb_of_st_list):
+            end = start + nb
+            sample_random.loc[start:end-1, 'group'] = i + 1
+            start = end
+
+
+        st.write(sample_random)
+
+    # if st.button('특성 고려해서 편성하기'):
+    #     # column 이름들을 버튼으로 만들기
+    #     cols = df.columns.tolist()
+    #     for col in cols:
+    #         if st.button(col):
+    #             st.write(df[col])
+
+    #     # 선택된 column들만 출력하기
+    #     if not st.button('Show All'):
+    #         st.write(df)
+    col = st.text_input('기준이 되는 열 이름을 입력해주세요 "점수" 혹은 "특성"을 입력해주세요 : ')
+    st.write(col, '(을/를) 고려하여 학생을 모둠별로 편성한 결과입니다. 복사하여 스프레드시트에 붙여넣기 해주세요. ')
+    if col =='점수': # 수치
+        def calculate_team_mean(team): 
+            team_mean_list = []
+            for i in range(k):
+                team_mean = team[i].T[1].mean()
+                team_mean_list.append(team_mean)
+            return team_mean_list
+
+        data = np.array(df[['이름', '점수']])
+
+        team = []
+        # 일단 순서대로 구분
+        start = 0
+        for nb in nb_of_st_list:
+            end = start + nb
+            team.append(data[start:end])
+            start = end
+
+        # 초기값 설정
+        team_mean_list = calculate_team_mean(team).copy()
+        range_i = np.max(team_mean_list)-np.min(team_mean_list)
+        range_i_new = range_i-1 # 그냥, 초기값 설정. 바로 반복문 안에서 업데이트 할 예정
+
+
+        for ii in range(10):
+            range_i_save = range_i.copy()
+            team_save = team.copy()
+            team_mean_list_save = team_mean_list.copy()
+
+            min, max = team[0].T[1].mean(), team[0].T[1].mean()
+            max_index = np.argmax(team_mean_list)
+            min_index = np.argmin(team_mean_list)
+
+            # print(min, min_index, max, max_index)
+            #최댓값 최솟값 뽑기 (min, max)
+            #그 그룹 추출하기#############################################update
+            team_min = team[min_index]
+            team_max = team[max_index]
+            #print(team_min, team_max)
+            # team_min 에서 낮은 사람과 team_max에서 높은 사람 교환
+            max_row_idx = np.argmax(team_max[:, 1])
+            max_row = team_max[max_row_idx, :]
+            min_row_idx = np.argmin(team_min[:, 1])
+            min_row = team_min[min_row_idx, :]
+
+            team_max = np.delete(team_max, max_row_idx, axis=0)
+            team_max = np.vstack([team_max, min_row])
+            team_min = np.delete(team_min, min_row_idx, axis=0)
+            team_min = np.vstack([team_min, max_row])
+            #print(team_min, team_max)
+            team[max_index] = team_max
+            team[min_index] = team_min
+            #############################################################updated
+            team_mean_list_new = calculate_team_mean(team)
+            range_i_new = np.max(team_mean_list_new)-np.min(team_mean_list_new)
+
+            st.write("그룹별 평균 점수의 범위가", range_i_save, range_i,"에서", range_i_new, "로 업데이트 되었어요!")        
+            if range_i_new > range_i:
+                break
+            range_i = range_i_new
+
+
+            #####################range_i_new >= range_i 라면 반복문 break,
+        st.write("다음 step에서는 그룹별 평균 점수의 범위가 더 커집니다.... 여기서 중단합니다. ")
+        team_df = pd.concat([pd.DataFrame(arr) for arr in team_save], ignore_index=True)
+        team_df.columns = ['이름', '점수']
+        team_df['group'] = 0
+        # 리스트 nb_of_st_list를 사용하여 'group' 열에 값을 할당
+        start = 0
+        for i, nb in enumerate(nb_of_st_list):
+            end = start + nb
+            team_df.loc[start:end-1, 'group'] = i + 1
+            start = end
+
+        st.write(team_df)
+        st.write("최종 팀별 평균은 각각 {}입니다. ".format(np.round(team_mean_list_save)))
+
+
+    elif col =="특성": #범주
+        st.write(df[['이름', '특성']])
+
 
 ####################################################
 page_names_to_funcs = {
     "소개글": intro,
     "1. 시험 문제 배점 정하기": scoring_for_exam, 
     "2. 학교생활기록부 독서기록 중복 찾기": book_recording,
-#    "3. "
-    "3. (시험중)승률 예측": prediction,
-    "4. (시험중)Data Visualization": datavisualization
+    "3. 모둠 구성하기": group_making
+#    "3. (시험중)승률 예측": prediction,
+#    "4. (시험중)Data Visualization": datavisualization
 }
 
 demo_name = st.sidebar.selectbox("업무자동화 페이지", page_names_to_funcs.keys())

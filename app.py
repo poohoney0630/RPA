@@ -4,7 +4,7 @@ import pandas as pd
 import streamlit as st
 import datetime
 import time
-import sklearn
+import scikit-learn as sklearn
 # 별도 페이지 만들기
 
 # 업무자동화

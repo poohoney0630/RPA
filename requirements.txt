@@ -1,2 +1,3 @@
 streamlit
-git+https://github.com/Surihub/example_package.git
+scikit-learn
+

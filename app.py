@@ -4,9 +4,10 @@ import pandas as pd
 import streamlit as st
 import datetime
 import time
+
+pip install -r myapp/requirements.txt
+
 import sklearn
-
-
 # 별도 페이지 만들기
 
 # 업무자동화

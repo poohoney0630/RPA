@@ -26,10 +26,11 @@ def intro():
     st.sidebar.success("페이지를 선택해주세요!")
 
     st.write("### **학교에서 반복적이고 기계적인 일을 적게 할 수는 없을까?**")
-    st.write("라는 고민(투덜)으로 시작한 업무자동화 페이지입니다. 학교에서 업무 효율화를 통해 교사의 전문성이 필요한 수업 평가, 기록의 질에 고민할 수 있는 시간을 확보하기 위해서죠! \n학교에서 업무나 수업 중 느끼는 '불편함'이 바로 업무자동화 '아이디어'입니다. ")
-    st.write('made by **숩숩** ✉sbhath17@gmail.com')
+    st.write("라는 고민(투덜)으로 시작한 업무자동화 페이지입니다. 학교에서 업무 처리가 효율적으로 된다면 교사의 전문성이 필요한 수업 평가, 기록의 질에 고민할 수 있는 시간을 확보하기 있으니까요!")
+    st.write("학교에서 업무나 수업 중 느끼는 '불편함'이 바로 업무자동화 '아이디어'입니다. 🎁")
     st.write("모바일로 들어오셨을 경우 : 왼쪽 상단의 '>' 버튼을 클릭하여 페이지를 이동해주세요.")
-    st.write("last updated:",time.strftime('%Y.%m.%d %H:%M:%S'))
+    st.write('made by **숩숩** ✉ sbhath17@gmail.com ✉ 오류나 피드백, 제안 등 환영합니다!')
+    st.write("updated 🕑 :",time.strftime('%Y.%m.%d %H:%M:%S'))
 
 # 1. 시험문제 배점 정하기 페이지
 def scoring_for_exam():
@@ -39,8 +40,8 @@ def scoring_for_exam():
     st.write("시험문제 낼 때, 협의시간을 줄여보세요!")
 
     # 입력창
-    N = st.number_input('배점 총 합', min_value=1, max_value=100, value=70, step=1)
-    n = st.number_input('총 문항 수 :', min_value=1, max_value=100, value=20, step=1)
+    N = st.number_input('배점 총 합을 입력해주세요!', min_value=1, max_value=100, value=70, step=1)
+    n = st.number_input('총 문항 수를 입력해주세요!', min_value=1, max_value=100, value=20, step=1)
     scorelist = st.text_input("문항 배점 리스트(2,3,4,5,6과 같이 수와 컴마로만 입력하고 Enter를 눌러주세요. :")
 
     if scorelist !="":
@@ -132,13 +133,14 @@ def book_recording():
     st.write("생활기록부 점검시, 학생마다 독서기록이 중복된 경우가 왕왕 있습니다. 예를 들어 한 학생이 2학년 1학기와 1학년 1학기에 같은 책을 기록한 경우죠! 나이스에서 **반별 독서기록파일**을 csv파일로 다운받아, 아래에 업로드해주세요. 중복된 항목이 출력됩니다. ")
     
     sample_book = pd.read_csv('https://raw.githubusercontent.com/Surihub/RPA/main/book_recording_sample.csv')
-    # 파일 업로드
-    uploaded_file = st.file_uploader("파일 업로드해주세요! 준비된 파일이 없을 경우, 아래 '샘플 파일 업로드 해보기' 버튼을 눌러 테스트해보세요.", type="csv")
+    # 샘플파일 업로드 하거나 파일 업로드
+
+    uploaded_file = st.file_uploader("(파일 업로드 기능 보완 예정)파일 업로드해주세요! 준비된 파일이 없을 경우, 아래 '샘플 파일 업로드 해보기' 버튼을 눌러 테스트해보세요.", type="csv")
     if uploaded_file is None:
         if st.button('샘플 파일 업로드 해보기'):
             #uploaded_file = pd.read_csv('book_recording_sample.csv')
             uploaded_file = pd.read_csv('https://raw.githubusercontent.com/Surihub/RPA/main/book_recording_sample.csv')
-            st.write('샘플 파일 업로드 완료!')
+            st.write('샘플 파일 업로드 완료! 눈으로 먼저 중복된 항목이 있는지 살펴보시고, 아래의 중복 기재 확인하기 버튼을 눌러주세요.')
             st.write(uploaded_file)
     uploaded_file = uploaded_file
     if st.button('중복 기재 확인하기!'):
@@ -147,6 +149,7 @@ def book_recording():
         #try:
         if uploaded_file is None:
             uploaded_file = sample_book
+            
         df = pd.DataFrame(uploaded_file.values[3:,:6])
         df.columns = ["name","section", "year", "grade","sem","book"]#column 이름 지정
         df = df.dropna(how='all')#모든 칸이 nan인 행 지우기
@@ -334,7 +337,8 @@ def group_making():
     scores = np.round(np.random.normal(loc=55, scale=18, size=n_students))
     scores = np.clip(scores, 0, 100)
     grades = np.random.choice(['A', 'B', 'C', 'D'], size=n_students, p=[0.3, 0.3, 0.2, 0.2])
-    data = {'이름': names, '점수': scores, '특성': grades}
+    energy = np.random.choice(['E','I'], size=n_students, p=[0.6, 0.4])
+    data = {'이름': names, '점수': scores, '특성': grades, '에너지':energy}
     sample_data = pd.DataFrame(data)
     df = sample_data
 
@@ -463,15 +467,15 @@ def group_making():
         st.write(team_df)
         st.write("최종 팀별 평균은 각각 {}입니다. ".format(np.round(team_mean_list)))
 
-
-    elif col =="특성": #범주
+    elif col =="특성" or "에너지": #범주
         def reset_cate(df):
-            df = df[['이름', '특성']]
-            one_hot_encoded = pd.get_dummies(df['특성'], prefix='특성')
+
+            df = df[['이름', col]]
+            one_hot_encoded = pd.get_dummies(df[col], prefix=col)
             # one-hot encoding
             data = np.array(pd.concat([df, one_hot_encoded], axis=1))
             data_df = pd.DataFrame(data)
-            data_df.columns = ['이름', '특성', 'A','B','C','D']
+            data_df.columns = ['이름', col]+list(df[col].unique())
             data_df['group'] = 0
             data_df = data_df.sample(frac = 1).reset_index(drop=True)
             # 조 임의 편성
@@ -492,7 +496,7 @@ def group_making():
                 team_vec_list = []
                 team_vec_std_list = []
                 for t in team:
-                    team_vec = np.sum(t.T[2:6], axis = 1)
+                    team_vec = np.sum(t.T[2:2+len(df[col].unique())], axis = 1)
                     team_vec_list.append(team_vec)
                     team_vec_std_list.append(np.std(team_vec))
                 return team_vec_list, team_vec_std_list

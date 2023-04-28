@@ -131,7 +131,7 @@ def book_recording():
     st.write("## 2. 학교생활기록부 독서기록 중복 찾기📚")
     st.write("생활기록부 점검시, 학생마다 독서기록이 중복된 경우가 왕왕 있습니다. 예를 들어 한 학생이 2학년 1학기와 1학년 1학기에 같은 책을 기록한 경우죠! 나이스에서 **반별 독서기록파일**을 csv파일로 다운받아, 아래에 업로드해주세요. 중복된 항목이 출력됩니다. ")
     
-
+    sample_book = pd.read_csv('https://raw.githubusercontent.com/Surihub/RPA/main/book_recording_sample.csv')
     # 파일 업로드
     uploaded_file = st.file_uploader("파일 업로드해주세요! 준비된 파일이 없을 경우, 아래 '샘플 파일 업로드 해보기' 버튼을 눌러 테스트해보세요.", type="csv")
     if uploaded_file is None:
@@ -139,9 +139,14 @@ def book_recording():
             #uploaded_file = pd.read_csv('book_recording_sample.csv')
             uploaded_file = pd.read_csv('https://raw.githubusercontent.com/Surihub/RPA/main/book_recording_sample.csv')
             st.write('샘플 파일 업로드 완료!')
-            
+            st.write(uploaded_file)
+    uploaded_file = uploaded_file
+    if st.button('중복 기재 확인하기!'):
+        st.write("중복을 확인합니다......")
 
-    try:
+        #try:
+        if uploaded_file is None:
+            uploaded_file = sample_book
         df = pd.DataFrame(uploaded_file.values[3:,:6])
         df.columns = ["name","section", "year", "grade","sem","book"]#column 이름 지정
         df = df.dropna(how='all')#모든 칸이 nan인 행 지우기
@@ -152,51 +157,51 @@ def book_recording():
 
         # 중복된 부분 찾기 (1) 책이름과 저자명이 완벽히 일치
         for student in df.name.unique():
-          #학생별로 도서명 문자열로 담기
-          temp = df[df.name==student]
-          all_book = temp.book.tolist()
-          book_list_incomplete = []
-          for book_by_row in all_book :   
-            book_list_incomplete = book_list_incomplete+book_by_row.split("), ")
+            #학생별로 도서명 문자열로 담기
+            temp = df[df.name==student]
+            all_book = temp.book.tolist()
+            book_list_incomplete = []
+            for book_by_row in all_book :   
+                book_list_incomplete = book_list_incomplete+book_by_row.split("), ")
 
-          #print("1. " , book_list_incomplete)
+        #print("1. " , book_list_incomplete)
 
-          # 빈 문자열 원소 제거 및 괄호 처리하기
-          book_list = []
-          for book in book_list_incomplete:
-            if len(book)==0:
-              continue
-            elif book[-1]==")":
-              book_list.append(book)
+        # 빈 문자열 원소 제거 및 괄호 처리하기
+            book_list = []
+            for book in book_list_incomplete:
+                if len(book)==0:
+                    continue
+                elif book[-1]==")":
+                    book_list.append(book)
+                else:
+                    book_list.append(book+")")
+            #print("2.    " , book_list)
+
+        # 중복 횟수 세기
+            book_count={}
+            lists = book_list
+            for i in lists:
+                try: book_count[i] += 1
+                except: book_count[i]=1
+        #print("3. " , book_count)
+
+        # 중복 횟수가 2 이상인 아이템의 key만 담기
+            book_duplicated = []
+            for k, v in book_count.items():
+                if v >= 2: 
+                    book_duplicated.append(k)
+        #print("4. " , book_duplicated)
+
+        # 출력하기
+            if len(book_duplicated)>0:
+                for book in book_duplicated:
+                    st.write('\n',student, "학생의 독서기록 중 **",book,"**이 중복되었습니다. ")
+                for i in range(len(book_duplicated)):
+                    st.write(temp[temp['book'].str.contains(book_duplicated[i][:2])]) 
             else:
-              book_list.append(book+")")
-          #print("2. " , book_list)
-
-          # 중복 횟수 세기
-          book_count={}
-          lists = book_list
-          for i in lists:
-              try: book_count[i] += 1
-              except: book_count[i]=1
-          #print("3. " , book_count)
-
-          # 중복 횟수가 2 이상인 아이템의 key만 담기
-          book_duplicated = []
-          for k, v in book_count.items():
-              if v >= 2: 
-                  book_duplicated.append(k)
-          #print("4. " , book_duplicated)
-
-          # 출력하기
-          if len(book_duplicated)>0:
-            for book in book_duplicated:
-                st.write('\n',student, "학생의 독서기록 중 **",book,"**이 중복되었습니다. ")
-            for i in range(len(book_duplicated)):
-              st.write(temp[temp['book'].str.contains(book_duplicated[i][:2])]) 
-          else:
-            continue
-    except:
-        print(":D")
+                continue
+        #except:
+        #    print(":D")
 
 def prediction():
     # 10명의 선수와 10번의 게임에 대한 기록을 갖는 데이터 프레임을 생성합니다.
@@ -382,8 +387,7 @@ def group_making():
     #     if not st.button('Show All'):
     #         st.write(df)
     col = st.text_input('기준이 되는 열 이름을 입력해주세요 "점수" 혹은 "특성"을 입력해주세요 : ')
-    st.write(col, '(을/를) 고려하여 학생을 모둠별로 편성한 결과입니다. 복사하여 스프레드시트에 붙여넣기 해주세요. ')
-
+    st.write(col, '(을/를) 고려하여 학생을 모둠별로 편성한 결과를 보려면 아래 버튼을 클릭해주세요. ')
 
 
     if col =='점수': # 수치
@@ -497,16 +501,21 @@ def group_making():
             #st.write(team_vec_list)
             #st.write(team_vec_std_list)
 
-            import matplotlib.pyplot as plt
+            # import matplotlib.pyplot as plt
             
-            fig, ax = plt.subplots(figsize=(3, 2))
-            ax.plot(team_vec_std_list, marker='o', markersize=8, color='green')
-            plt.title("sum of y(lower is better):{}".format(np.round(np.sum(team_vec_std_list), 2)))
-            plt.yticks([0,5])
-            st.pyplot(fig)
-            st.write(data_df)
-        if st.button('편성 결과 보기'):
+            # fig, ax = plt.subplots(figsize=(3, 2))
+            # ax.plot(team_vec_std_list, marker='o', markersize=8, color='green')
+            # plt.title("sum of y(lower is better):{}".format(np.round(np.sum(team_vec_std_list), 2)))
+            # plt.yticks([0,5])
+            # st.pyplot(fig)
+            # 
+            st.write("## 모둠별 '불균형도'의 합(lower is better):",np.round(np.sum(team_vec_std_list), 2))
             st.write('y값은 낮을수록 학생들이 골고루 있다는 뜻입니다! (그룹 내 학생들의 원핫인코딩 벡터합 원소의 표준편차)')
+            st.write('이 결과가 마음에 드실 경우, 아래의 표를 복사하여 스프레드시트에 붙여넣기 해주세요.')
+            st.write(data_df)
+            st.write('합을 최소화시키는 알고리즘은 곧 업데이트 될 예정입니다.😂')
+
+        if st.button('편성 결과 보기'):
             reset_cate(df)
         #data['group'] = 0
 

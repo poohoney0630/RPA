@@ -7,8 +7,8 @@ import time
 import random
 # 페이지 설명 부분
 
-# st.write("## 4. 수학 문제 무한 생성기!🖍")
-# st.write("연습이 필요한 계산 문제 생성하느라 골치아프셨나요? 숫자만 바꿔도 되는 문제라면, 문제를 자동으로 만들고 채점도 자동으로 해보세요!")
+st.title("수학 문제 무한 생성기!🖍")
+st.write("연습이 필요한 계산 문제 생성하느라 골치아프셨나요? 숫자만 바꿔도 되는 문제라면, 문제를 자동으로 만들고 채점도 자동으로 해보세요!")
 
 
 
@@ -39,19 +39,6 @@ import random
 # #        equation_str = '## $${}x-{}={}$$'.format(a, b, c)
 # #        st.write(equation_str)
 
-
-import numpy as np
-import altair as alt
-import pandas as pd
-import streamlit as st
-import datetime
-import time
-import random
-
-# page description
-
-st.write("## 4. Infinite generator of math problems!🖍")
-st.write("Are you tired of creating math problems that require practice? If you only need to change the numbers, try creating problems automatically and automatically grading them!")
 
 # linear equation
 st.write('### 1. Practice linear equation')

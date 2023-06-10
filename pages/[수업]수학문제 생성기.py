@@ -9,7 +9,7 @@ import random
 
 st.title("수학 문제 무한 생성기!🖍")
 st.write("연습이 필요한 계산 문제 생성하느라 골치아프셨나요? 숫자만 바꿔도 되는 문제라면, 문제를 자동으로 만들고 채점도 자동으로 해보세요!")
-
+st.write("❗기능 보완 예정❗")
 
 
 # # 일차방정식
@@ -46,36 +46,74 @@ st.write('Find the solution of the linear equation below.')
 st.write('For example, if 2x-1=3, you only need to enter 2 in the answer.')
 
 # Initialize session state variables
-if 'equation_nums' not in st.session_state:
-    st.session_state.equation_nums = list(range(1, 11))
-    random.shuffle(st.session_state.equation_nums)
+# if 'equation_nums' not in st.session_state:
+#     st.session_state.equation_nums = list(range(1, 11))
+#     random.shuffle(st.session_state.equation_nums)
 
-if 'equation_index' not in st.session_state:
+# if 'equation_index' not in st.session_state:
+#     st.session_state.equation_index = 0
+
+# equation_nums = st.session_state.equation_nums
+# equation_index = st.session_state.equation_index
+
+# a, b, c = equation_nums[equation_index * 3: equation_index * 3 + 3]
+# equation_str = '## $${}x-{}={}$$'.format(a, b, c)
+
+# user_input = st.number_input("Enter an answer to the equation below (rounded to two decimal places)")
+# answer = np.round((b + c) / a, 1)
+# st.write(equation_str)
+
+# feedback = ""
+# if user_input == answer:
+#     feedback = "Correct answer!🎉 Well done. Try the next question."
+# else:
+#     feedback = "Incorrect answer. Try again!💪"
+
+# check_answer = st.button('Check the answer!')
+# if check_answer:
+#     st.write(feedback)
+#     st.write(f"The correct answer is {answer}.")
+
+# update_equation = st.button('Update')
+# if update_equation:
+#     equation_index += 1
+#     if equation_index * 3 + 3 > len(equation_nums):
+#         random.shuffle(equation_nums)
+#         equation_index = 0
+#     st.session_state.equation_index = equation_index
+import streamlit as st
+import numpy as np
+import random
+
+# Initialize equation numbers and index
+if "equation_nums" not in st.session_state:
+    st.session_state.equation_nums = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # Example equation numbers
+
+if "equation_index" not in st.session_state:
     st.session_state.equation_index = 0
 
 equation_nums = st.session_state.equation_nums
 equation_index = st.session_state.equation_index
 
+# Retrieve equation numbers based on index
 a, b, c = equation_nums[equation_index * 3: equation_index * 3 + 3]
 equation_str = '## $${}x-{}={}$$'.format(a, b, c)
 
+# User input and answer
 user_input = st.number_input("Enter an answer to the equation below (rounded to two decimal places)")
 answer = np.round((b + c) / a, 1)
 st.write(equation_str)
 
-feedback = ""
-if user_input == answer:
-    feedback = "Correct answer!🎉 Well done. Try the next question."
-else:
-    feedback = "Incorrect answer. Try again!💪"
-
-check_answer = st.button('Check the answer!')
-if check_answer:
-    st.write(feedback)
+# Checking the answer
+if st.button('Check the answer!'):
+    if user_input == answer:
+        st.write("Correct answer!🎉 Well done. Try the next question.")
+    else:
+        st.write("Incorrect answer. Try again!💪")
     st.write(f"The correct answer is {answer}.")
 
-update_equation = st.button('Update')
-if update_equation:
+# Update button
+if st.button('Update'):
     equation_index += 1
     if equation_index * 3 + 3 > len(equation_nums):
         random.shuffle(equation_nums)

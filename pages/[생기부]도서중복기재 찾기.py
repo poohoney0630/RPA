@@ -7,7 +7,7 @@ import time
 import random
 
 # 페이지 설명 부분
-st.write("## 2. 학교생활기록부 독서기록 중복 찾기📚")
+st.title("학교생활기록부 독서기록 중복 찾기📚")
 st.write("생활기록부 점검시, 학생마다 독서기록이 중복된 경우가 왕왕 있습니다. 예를 들어 한 학생이 2학년 1학기와 1학년 1학기에 같은 책을 기록한 경우죠! 나이스에서 **반별 독서기록파일**을 csv파일로 다운받아, 아래에 업로드해주세요. 중복된 항목이 출력됩니다. ")
 
 sample_book = pd.read_csv('https://raw.githubusercontent.com/Surihub/RPA/main/book_recording_sample.csv')

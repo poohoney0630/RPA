@@ -19,7 +19,6 @@ import random
 
 st.write("# 😎Welcome to RPA in SCHOOL! 👋")
 st.write("업무자동화 페이지에 오신 것을 환영합니다!")
-st.sidebar.success("왼쪽에서 페이지를 선택해주세요!")
 st.write('made by **숩숩** ✉ sbhath17@gmail.com ✉ ')
 st.write("updated 🕑 :",time.strftime('%Y.%m.%d %H:%M:%S'))
 

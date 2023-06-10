@@ -18,7 +18,7 @@ import streamlit as st
 text_input = st.text_input("재미있게 사용하셨다면 후기를 남겨주세요!")
 
 # Create a styled button for star rating selection
-star_rating = st.radio("별점을 선택해주세요!", ['⭐','⭐⭐', '⭐⭐⭐', '⭐⭐⭐⭐', '⭐⭐⭐⭐⭐'], key="rating")
+star_rating = st.radio("별점을 선택해주세요!", ['⭐','⭐⭐', '⭐⭐⭐', '⭐⭐⭐⭐', '⭐⭐⭐⭐⭐'], index=2,key="rating")
 
 # Create a submit button
 if st.button("의견 제출하기"):

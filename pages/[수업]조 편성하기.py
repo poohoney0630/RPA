@@ -43,7 +43,7 @@ def divide_n_into_k_parts(n, k):
 # sample data(df) 생성하기
 #np.random.seed(42)
 
-st.write('(파일 업로드 기능 보완 예정)')
+st.write("❗업로드 기능 보완 예정❗")
 uploaded_file = st.file_uploader("파일 업로드해주세요! 준비된 파일이 없을 경우, 아래 '샘플 파일 업로드 해보기' 버튼을 눌러 테스트해보세요.", type="csv")
 n_students = int(st.text_input('샘플 데이터를 생성합니다. 학생 수를 설정해주세요:', value = 30))
 names = generate_names(n_students)
@@ -103,7 +103,7 @@ if st.button('랜덤 모둠 편성'):
 #     # 선택된 column들만 출력하기
 #     if not st.button('Show All'):
 #         st.write(df)
-col = st.text_input('기준이 되는 열 이름을 입력해주세요 "점수" 혹은 "특성"을 입력해주세요 : ')
+col = st.text_input('기준이 되는 열 이름을 입력해주세요("점수", "특성", "에너지") : ')
 st.write(col, '(을/를) 고려하여 학생을 모둠별로 편성한 결과를 보려면 아래 버튼을 클릭해주세요. ')
 
 
@@ -115,7 +115,7 @@ if col =='점수': # 수치
             team_mean_list.append(team_mean)
         return team_mean_list
 
-    data = np.array(df[['이름', '점수']])
+    data = np.array(df.loc[:,['이름', col]])#[['이름', '점수']])
 
     team = []
     # 일단 순서대로 구분
@@ -128,6 +128,7 @@ if col =='점수': # 수치
     # 초기값 설정
     team_mean_list = calculate_team_mean(team)
     dispersion = np.max(team_mean_list)-np.min(team_mean_list)
+    st.write("## 그룹 편성 결과")
 
     for ii in range(10):
         
@@ -156,7 +157,7 @@ if col =='점수': # 수치
         #############################################################updated
         team_mean_list_new = calculate_team_mean(team)
         dispersion_new = np.max(team_mean_list_new)-np.min(team_mean_list_new)
-
+        
         st.write("그룹별 평균 점수의 범위가", np.round(dispersion, 2),"에서", np.round(dispersion_new, 2), "로 업데이트 되었어요!")        
         if dispersion_new > dispersion:
             break
@@ -180,7 +181,65 @@ if col =='점수': # 수치
     st.write(team_df)
     st.write("최종 팀별 평균은 각각 {}입니다. ".format(np.round(team_mean_list)))
 
-elif col =="특성" or "에너지": #범주
+elif col =="특성" or "에너지":
+
+
+    def calculate_team_sum_std(team): 
+        team_vec_list = []
+        team_vec_std_list = []
+        for t in team:
+            team_vec = np.sum(t.T[2:2+len(df[col].unique())], axis = 1)
+            team_vec_list.append(team_vec)
+            team_vec_std_list.append(np.std(team_vec))
+        return team_vec_list, team_vec_std_list
+    # Define the objective_function
+    def objective_function(team):
+        team_vec_list, team_vec_std_list = calculate_team_sum_std(team)
+        return np.sum(team_vec_std_list)
+
+    # Define the neighborhood_function
+    def neighborhood_function(team):
+        new_team = team.copy()
+        # Implement logic to swap students between teams in the new_team allocation
+        return new_team
+
+    # Define the simulated_annealing function
+    def simulated_annealing(initial_team):
+        current_team = initial_team
+        current_energy = objective_function(current_team)
+
+        # Set the initial temperature and other parameters
+        temperature = 100.0
+        cooling_rate = 0.01
+        num_iterations = 1000
+
+        best_team = current_team
+        best_energy = current_energy
+
+        for _ in range(num_iterations):
+            new_team = neighborhood_function(current_team)
+            new_energy = objective_function(new_team)
+
+            if new_energy < current_energy or np.random.rand() < np.exp((current_energy - new_energy) / temperature):
+                current_team = new_team
+                current_energy = new_energy
+
+            if new_energy < best_energy:
+                best_team = new_team
+                best_energy = new_energy
+
+            temperature *= 1 - cooling_rate
+
+        return best_team
+
+    # Provide the initial team allocation
+    initial_team = []  # Replace with your initial team allocation
+
+    # Train the model using Simulated Annealing
+    optimal_team = simulated_annealing(initial_team)
+
+
+# elif col =="특성" or "에너지": #범주
     def reset_cate(df):
 
         df = df[['이름', col]]
@@ -215,18 +274,8 @@ elif col =="특성" or "에너지": #범주
             return team_vec_list, team_vec_std_list
 
         team_vec_list, team_vec_std_list = calculate_team_sum_std(team)
-        #st.write(team_vec_list)
-        #st.write(team_vec_std_list)
 
-        # import matplotlib.pyplot as plt
-        
-        # fig, ax = plt.subplots(figsize=(3, 2))
-        # ax.plot(team_vec_std_list, marker='o', markersize=8, color='green')
-        # plt.title("sum of y(lower is better):{}".format(np.round(np.sum(team_vec_std_list), 2)))
-        # plt.yticks([0,5])
-        # st.pyplot(fig)
-        # 
-        st.write("## 모둠별 '불균형도'의 합(lower is better):",np.round(np.sum(team_vec_std_list), 2))
+        st.write("## 모둠별 '불균형도'의 합(The lower, the better):",np.round(np.sum(team_vec_std_list), 2))
         st.write('y값은 낮을수록 학생들이 골고루 있다는 뜻입니다! (그룹 내 학생들의 원핫인코딩 벡터합 원소의 표준편차)')
         st.write('이 결과가 마음에 드실 경우, 아래의 표를 복사하여 스프레드시트에 붙여넣기 해주세요.')
         st.write(data_df)
@@ -234,68 +283,3 @@ elif col =="특성" or "에너지": #범주
 
     if st.button('편성 결과 보기'):
         reset_cate(df)
-    #data['group'] = 0
-
-
-    # team = []
-    # # 일단 순서대로 구분
-    # start = 0
-    # for nb in nb_of_st_list:
-    #     end = start + nb
-    #     team.append(data[start:end])
-    #     start = end
-
-    # # 초기값 설정
-    # team_mean_list = calculate_team_mean(team)
-    # dispersion = np.max(team_mean_list)-np.min(team_mean_list)
-
-    # for ii in range(10):
-        
-    #     #그 그룹 추출하기#############################################update
-    #     min, max = team[0].T[1].mean(), team[0].T[1].mean()
-    #     max_index = np.argmax(team_mean_list)
-    #     min_index = np.argmin(team_mean_list)
-
-    #     #최댓값 최솟값 뽑기 (min, max)
-    #     team_min = team[min_index]
-    #     team_max = team[max_index]
-    #     #print(team_min, team_max)
-    #     # team_min 에서 낮은 사람과 team_max에서 높은 사람 교환
-    #     max_row_idx = np.argmax(team_max[:, 1])
-    #     max_row = team_max[max_row_idx, :]
-    #     min_row_idx = np.argmin(team_min[:, 1])
-    #     min_row = team_min[min_row_idx, :]
-
-    #     team_max = np.delete(team_max, max_row_idx, axis=0)
-    #     team_max = np.vstack([team_max, min_row])
-    #     team_min = np.delete(team_min, min_row_idx, axis=0)
-    #     team_min = np.vstack([team_min, max_row])
-    #     #print(team_min, team_max)
-    #     team[max_index] = team_max
-    #     team[min_index] = team_min
-    #     #############################################################updated
-    #     team_mean_list_new = calculate_team_mean(team)
-    #     dispersion_new = np.max(team_mean_list_new)-np.min(team_mean_list_new)
-
-    #     st.write("그룹별 평균 점수의 범위가", np.round(dispersion, 2),"에서", np.round(dispersion_new, 2), "로 업데이트 되었어요!")        
-    #     if dispersion_new > dispersion:
-    #         break
-    #     dispersion = dispersion_new
-    #     #team = team_new
-    #     team_mean_list = team_mean_list_new
-
-
-    #     #####################range_i_new >= range_i 라면 반복문 break,
-    # st.write("다음 step에서는 그룹별 평균 점수의 범위가 더 커졌으므로 여기서 중단합니다. ")
-    # team_df = pd.concat([pd.DataFrame(arr) for arr in team], ignore_index=True)
-    # team_df.columns = ['이름', '점수']
-    # team_df['group'] = 0
-    # # 리스트 nb_of_st_list를 사용하여 'group' 열에 값을 할당
-    # start = 0
-    # for i, nb in enumerate(nb_of_st_list):
-    #     end = start + nb
-    #     team_df.loc[start:end-1, 'group'] = i + 1
-    #     start = end
-
-    # st.write(team_df)
-    # st.write("최종 팀별 평균은 각각 {}입니다. ".format(np.round(team_mean_list)))

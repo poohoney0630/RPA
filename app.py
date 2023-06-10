@@ -17,19 +17,21 @@ import random
 # 1. 뽑기 확률 시뮬레이터
 # 2. 데이터 프로파일링 : streamlit_pandas_profiling
 
+st.write("# 😎Welcome to RPA in SCHOOL! 👋")
+st.write("업무자동화 페이지에 오신 것을 환영합니다!")
+st.sidebar.success("왼쪽에서 페이지를 선택해주세요!")
+st.write('made by **숩숩** ✉ sbhath17@gmail.com ✉ ')
+st.write("updated 🕑 :",time.strftime('%Y.%m.%d %H:%M:%S'))
+
+
+
 # 시작 페이지
 def intro():
 
     st.write("# 😎Welcome to RPA in SCHOOL! 👋")
     st.write("업무자동화 페이지에 오신 것을 환영합니다!")
-
-    st.sidebar.success("페이지를 선택해주세요!")
-
-    st.write("### **학교에서 반복적이고 기계적인 일을 적게 할 수는 없을까?**")
-    st.write("라는 고민(투덜)으로 시작한 업무자동화 페이지입니다. 학교에서 업무 처리가 효율적으로 된다면 교사의 전문성이 필요한 수업 평가, 기록의 질에 고민할 수 있는 시간을 확보하기 있으니까요!")
-    st.write("학교에서 업무나 수업 중 느끼는 '불편함'이 바로 업무자동화 '아이디어'입니다. 🎁")
-    st.write("모바일로 들어오셨을 경우 : 왼쪽 상단의 '>' 버튼을 클릭하여 페이지를 이동해주세요.")
-    st.write('made by **숩숩** ✉ sbhath17@gmail.com ✉ 오류나 피드백, 제안 등 환영합니다!')
+    st.sidebar.success("왼쪽에서 페이지를 선택해주세요!")
+    st.write('made by **숩숩** ✉ sbhath17@gmail.com ✉ ')
     st.write("updated 🕑 :",time.strftime('%Y.%m.%d %H:%M:%S'))
 
 # 1. 시험문제 배점 정하기 페이지
@@ -621,35 +623,17 @@ def math_prob_making():
 #        st.write(equation_str)
 
 
-def math_problem_generator():
-    nums = list(range(1, 11))
-    random.shuffle(nums)
-    a, b, c = nums[:3]
-    st.write('## $${}x-{}={}x+{}$$'.format(a, b, c, d))
 
-    user_input = st.text_input("답안을 입력하세요")
-    if user_input:
-        try:
-            user_answer = int(user_input)
-            if user_answer == answer:
-                st.write("정답입니다!")
-            else:
-                st.write("오답입니다.")
-        except ValueError:
-            st.write("올바른 값을 입력하세요.")
+# # ####################################################
+# page_names_to_funcs = {
+#     # "소개글": intro,
+#     # "1. 시험 문제 배점 정하기": scoring_for_exam, 
+#     # "2. 학교생활기록부 독서기록 중복 찾기": book_recording,
+#     # "3. 모둠 구성하기": group_making, 
+#     # "4. 수학 문제 무한 생성기": math_prob_making
+# #    "3. (시험중)승률 예측": prediction,
+# #    "4. (시험중)Data Visualization": datavisualization
+# }
 
-
-
-####################################################
-page_names_to_funcs = {
-    "소개글": intro,
-    "1. 시험 문제 배점 정하기": scoring_for_exam, 
-    "2. 학교생활기록부 독서기록 중복 찾기": book_recording,
-    "3. 모둠 구성하기": group_making, 
-    "4. 수학 문제 무한 생성기": math_prob_making
-#    "3. (시험중)승률 예측": prediction,
-#    "4. (시험중)Data Visualization": datavisualization
-}
-
-demo_name = st.sidebar.selectbox("업무자동화 페이지", page_names_to_funcs.keys())
-page_names_to_funcs[demo_name]()
+# demo_name = st.sidebar.selectbox("업무자동화 페이지", page_names_to_funcs.keys())
+# page_names_to_funcs[demo_name]()

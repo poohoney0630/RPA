@@ -2,7 +2,8 @@ import streamlit as st
 
 st.title("📎연수 자료 모음")
 
-st.write("Google Apps Script에서 자동 메일 전송하기 코드")
+st.write("## 1. Google Apps Script에서 자동 메일 전송하기 코드")
+st.write('여러 명의 사람들에게 한꺼번에, 개별화된 메일을 보낼 수 있는 GAS 코드입니다. ')
 st.write("구글 앱스 스크립트 링크 : [Google Apps Script](https://www.google.com/script/start/)")
 
 # Define your code

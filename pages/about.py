@@ -11,32 +11,32 @@ st.write('이메일로 오류나 피드백, 제안사항이 있으실 경우 언
 st.write('made by **숩숩** ✉ sbhath17@gmail.com ✉')
 
 
-import pandas as pd
-import streamlit as st
+# import pandas as pd
+# import streamlit as st
 
-# Create input fields for text and star rating
-text_input = st.text_input("재미있게 사용하셨다면 후기를 남겨주세요!")
+# # Create input fields for text and star rating
+# text_input = st.text_input("재미있게 사용하셨다면 후기를 남겨주세요!")
 
-# Create a styled button for star rating selection
-star_rating = st.radio("별점을 선택해주세요!", ['⭐','⭐⭐', '⭐⭐⭐', '⭐⭐⭐⭐', '⭐⭐⭐⭐⭐'], index=2,key="rating")
+# # Create a styled button for star rating selection
+# star_rating = st.radio("별점을 선택해주세요!", ['⭐','⭐⭐', '⭐⭐⭐', '⭐⭐⭐⭐', '⭐⭐⭐⭐⭐'], index=2,key="rating")
 
-# Create a submit button
-if st.button("의견 제출하기"):
-    # Create a dictionary with the entered data
-    data = {'Text': [text_input], 'Star Rating': [star_rating]}
+# # Create a submit button
+# if st.button("의견 제출하기"):
+#     # Create a dictionary with the entered data
+#     data = {'Text': [text_input], 'Star Rating': [star_rating]}
 
-    # Append the data to an existing CSV file or create a new one
-    df = pd.DataFrame(data)
+#     # Append the data to an existing CSV file or create a new one
+#     df = pd.DataFrame(data)
 
-    # Check if the CSV file has been created before
-    if 'csv_created' not in st.session_state:
-        st.session_state.csv_created = False
+#     # Check if the CSV file has been created before
+#     if 'csv_created' not in st.session_state:
+#         st.session_state.csv_created = False
 
-    if not st.session_state.csv_created:
-        df.to_csv('feedback_rating.csv', index=False)
-        st.session_state.csv_created = True
-    else:
-        df.to_csv('feedback_rating.csv', mode='a', header=False, index=False)
+#     if not st.session_state.csv_created:
+#         df.to_csv('feedback_rating.csv', index=False)
+#         st.session_state.csv_created = True
+#     else:
+#         df.to_csv('feedback_rating.csv', mode='a', header=False, index=False)
 
-    # Display a success message
-    st.success("의견 감사합니다.😀")
+#     # Display a success message
+#     st.success("의견 감사합니다.😀")

@@ -13,9 +13,9 @@ st.write("❗기능 보완 예정❗")
 
 
 # # 일차방정식
-# st.write('### 1. 일차방정식 연습')
-# st.write('아래의 일차방정식의 해를 구하세요.')
-# st.write('예를 들어, 2x-1=3인 경우 답안에는 2만 입력하면 됩니다. ')
+st.write('### 일차방정식 연습')
+st.write('아래의 일차방정식의 해를 구하세요.')
+st.write('예를 들어, 2x-1=3인 경우 답안에는 2만 입력하면 됩니다. ')
 # nums = list(range(1, 11))  # 1부터 10까지의 자연수 리스트 생성
 # random.shuffle(nums)  # 리스트를 무작위로 섞음
 # a, b, c = nums[:3]  # 리스트에서 앞에서 네 개를 뽑아서 변수에 할당
@@ -41,9 +41,6 @@ st.write("❗기능 보완 예정❗")
 
 
 # linear equation
-st.write('### 1. Practice linear equation')
-st.write('Find the solution of the linear equation below.')
-st.write('For example, if 2x-1=3, you only need to enter 2 in the answer.')
 
 # Initialize session state variables
 # if 'equation_nums' not in st.session_state:
@@ -100,20 +97,22 @@ a, b, c = equation_nums[equation_index * 3: equation_index * 3 + 3]
 equation_str = '## $${}x-{}={}$$'.format(a, b, c)
 
 # User input and answer
-user_input = st.number_input("Enter an answer to the equation below (rounded to two decimal places)")
+user_input = st.number_input("아래 방정식에 대한 답을 입력하세요(소수 둘째자리에서 반올림)")
 answer = np.round((b + c) / a, 1)
 st.write(equation_str)
 
 # Checking the answer
-if st.button('Check the answer!'):
+if st.button('정답 확인하기!'):
     if user_input == answer:
-        st.write("Correct answer!🎉 Well done. Try the next question.")
+        st.write('## 🎉정답입니다! ')
+        st.write("참 잘했어요. 다음 문제를 해결해보세요.")
     else:
-        st.write("Incorrect answer. Try again!💪")
-    st.write(f"The correct answer is {answer}.")
+        st.write('## 😓오답입니다! ')
+        st.write("다시 한 번 시도해보세요!💪")
+    st.write(f"정답은 {answer} 입니다.")
 
 # Update button
-if st.button('Update'):
+if st.button('다음 문제 풀기'):
     equation_index += 1
     if equation_index * 3 + 3 > len(equation_nums):
         random.shuffle(equation_nums)

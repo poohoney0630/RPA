@@ -1,10 +1,22 @@
 import streamlit as st
 
-st.title("📎연수 자료 모음")
+st.title("📎자료 & 링크 모음")
+st.write("#### 1. 여러 가지 사이트")
+st.write("생성형 AI, ChatGPT : [ChatGPT](https://chat.openai.com/)")
+st.write("생성형 AI, Google Bard : [Google Bard](https://bard.google.com/?hl=ko)")
+st.write("생성형 AI, wrtn(뤼튼) : [wrtn](https://wrtn.ai/)")
+st.write("카카오톡에서 바로 쓰는 AskUp : [AskUp](https://pf.kakao.com/_BhxkWxj)")
+st.write("슬라이드 및 PPT 자동 생성하기, slidesAI : [SlidesAI](https://www.slidesai.io/)")
+st.markdown("---")
 
-st.write("## 1. Google Apps Script에서 자동 메일 전송하기 코드")
-st.write('여러 명의 사람들에게 한꺼번에, 개별화된 메일을 보낼 수 있는 GAS 코드입니다. ')
+st.write('### 2. 연수 자료(0613)')
+st.write("#### 학생 조편성 및 슬라이드 만들기 자료")
+st.write("google colab 실습용 파일입니다. [Google Colab file](https://colab.research.google.com/drive/1tDDBPmREGGUSz626NOXot3tZ4xY4S6Gu?usp=sharing)")
+
+st.write("#### Google Apps Script에서 자동 메일 전송하기 코드")
+st.write('여러 명의 사람들에게 한꺼번에, 개별화된 메일을 보낼 수 있는 GAS 코드입니다. 자세한 방법은 연수자료를 참고해주세요!')
 st.write("구글 앱스 스크립트 링크 : [Google Apps Script](https://www.google.com/script/start/)")
+
 
 # Define your code
 code = """

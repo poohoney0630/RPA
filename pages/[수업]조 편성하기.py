@@ -5,7 +5,7 @@ import streamlit as st
 import datetime
 import time
 import random
-
+from faker import Faker
 st.title("학생들의 특성을 바탕으로 조 편성하기🤼‍♂️")
 st.write("수업 등에서 모둠을 구성할 때, 일반적으로 랜덤으로 편성을 많이 합니다. 하지만 가끔 경우에 따라 학생들의 특성에 따라 조를 편성하면 좋은 경우가 있습니다. 예를 들어 모둠별로 문제를 해결해야 하는 수업에서 점수가 낮은 학생들만 모여있다면 원활하게 진행되지 않겠죠? 혹은, 학생들의 특성이 어느정도는 달라야 서로 상호작용을 하며 배우는 것이 더 많을텐데요! 이러한 점을 고려해서 모둠을 편성하는 예시입니다. 완성된 결과를 보고, 꼭 검토 후 사용해주세요!")
 
@@ -21,6 +21,18 @@ def generate_names(n):
         if name not in names:
             names.append(name)
     return names
+
+fake = Faker('ko_KR')
+# n명의 자료 생성하기
+def generate_names_faker(n):
+    names = []
+    for _ in range(n):
+        name = fake.name()
+        names.append(name)
+    return names
+
+# st.write(generate_names(5))
+# st.write(generate_names_faker(5))
 
 # n명을 k개 그룹으로 나눌 때 조별 인원수 리스트
 def divide_n_into_k_parts(n, k):
@@ -40,39 +52,53 @@ def divide_n_into_k_parts(n, k):
 
     return intervals
 
-# sample data(df) 생성하기
-#np.random.seed(42)
-
 st.write("❗업로드 기능 보완 예정❗")
 uploaded_file = st.file_uploader("파일 업로드해주세요! 준비된 파일이 없을 경우, 아래 '샘플 파일 업로드 해보기' 버튼을 눌러 테스트해보세요.", type="csv")
+# 샘플 데이터 생성
 n_students = int(st.text_input('샘플 데이터를 생성합니다. 학생 수를 설정해주세요:', value = 30))
-names = generate_names(n_students)
+names = generate_names_faker(n_students)
 scores = np.round(np.random.normal(loc=55, scale=18, size=n_students))
 scores = np.clip(scores, 0, 100)
 grades = np.random.choice(['A', 'B', 'C', 'D'], size=n_students, p=[0.3, 0.3, 0.2, 0.2])
 energy = np.random.choice(['E','I'], size=n_students, p=[0.6, 0.4])
 data = {'이름': names, '점수': scores, '특성': grades, '에너지':energy}
 sample_data = pd.DataFrame(data)
-df = sample_data
 
 
-if st.button('샘플 파일 업로드 해보기'):
-    uploaded_file = sample_data
-    st.write('샘플 파일 업로드 완료! {}명의 학생입니다. 데이터는 버튼을 누를 때마다 리셋됩니다.  '.format(len(sample_data)))
-    st.write(sample_data)
-# 파일 업로드
-# if uploaded_file is None:
-#     if st.button('샘플 파일 업로드 해보기'):
-#         uploaded_file = sample_data
-#         st.write(sample_data)
-#         st.write('샘플 파일 업로드 완료!')
+# if st.button('샘플 파일 적용해보기'):
+#     uploaded_file = sample_data
+#     st.write('샘플 파일 생성 완료! {}명의 학생입니다. 데이터는 버튼을 누를 때마다 리셋됩니다.  '.format(len(sample_data)))
+#     st.write(sample_data)
+
+try:
+    # 파일 업로드
+    if uploaded_file is None:
+        if st.button('샘플 자료 적용해보기'):
+            df = sample_data
+            st.write('샘플 자료 생성 완료! {}명의 학생입니다. 데이터는 버튼을 누를 때마다 리셋됩니다.  '.format(len(sample_data)))
+            st.write(df)
+    elif st.button('업로드한 학생 파일 확인하기'):
+        uploaded_file = pd.read_csv(uploaded_file, encoding = 'euc-kr')
+        # uploaded_file = sample_data
+        st.write(uploaded_file)
+        df = sample_data
+        st.write(df)
+        st.write('학생 파일 업로드 완료!')
+        
+except ValueError:
+    st.write("파일을 업로드하거나 샘플 학생 데이터를 생성해보세요.")        
 # try:
 #     df = pd.DataFrame(uploaded_file.values[:,:])
 #     st.write(df)
 # except:
-#     print(":D")
+#     st.write(":D")
+
+#df = pd.DataFrame(uploaded_file)#.values[:,:])
+df = sample_data
+
 k = int(st.text_input('모둠 수를 입력하세요:', value = 8)) # 그룹의 개수
 n = len(df)
+
 nb_of_st_list = divide_n_into_k_parts(n, k)
 if st.button('랜덤 모둠 편성'):
     st.write('랜덤으로 모둠을 편성합니다.')
@@ -89,8 +115,6 @@ if st.button('랜덤 모둠 편성'):
         end = start + nb
         sample_random.loc[start:end-1, 'group'] = i + 1
         start = end
-
-
     st.write(sample_random)
 
 # if st.button('특성 고려해서 편성하기'):

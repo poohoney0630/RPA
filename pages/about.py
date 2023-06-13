@@ -8,7 +8,7 @@ st.write('이메일로 오류나 피드백, 제안사항이 있으실 경우 언
 
 
 
-st.write('made by **숩숩** ✉ sbhath17@gmail.com ✉')
+st.write('made by **숩숩** ✉ sbhath17@gmail.com ✉ 피드백 환영합니다🤩 > [피드백 하러 가기](https://forms.gle/nytXFQiRriwRgkKy7)')
 
 
 # import pandas as pd

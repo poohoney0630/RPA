@@ -27,7 +27,7 @@ st.write("- 오늘은 몇번?")
 st.write("- 조 편성하기")
 st.write("- 문항 배점 정하기")
 st.markdown("----")
-st.write('made by **숩숩** ✉ sbhath17@gmail.com ✉ ')
+st.write('made by **숩숩** ✉ sbhath17@gmail.com ✉ 피드백 환영합니다🤩 > [피드백 하러 가기](https://forms.gle/nytXFQiRriwRgkKy7)')
 # st.write("updated🕑 :",time.strftime('%Y.%m.%d %H:%M:%S'))
 st.write("version_2.0, updated 23.6.11")
 

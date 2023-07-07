@@ -1,5 +1,9 @@
 import streamlit as st
 import pandas as pd
+import difflib
+from difflib import SequenceMatcher
+from kiwipiepy import Kiwi
+import numpy as np
 
 # 페이지 설명 부분
 st.title("학교생활기록부 독서기록 중복 찾기📚")
@@ -60,9 +64,8 @@ def find_duplicate_books(df):
         else:
             continue
 
-def find_duplicate_books_2(df):
-    import difflib
-
+def find_duplicate_books_2(df, cut_off):
+    kiwi = Kiwi()
     for student in df.name.unique():
         # 학생별로 도서명 문자열로 담기
         temp = df[df.name == student]
@@ -81,36 +84,37 @@ def find_duplicate_books_2(df):
             else:
                 book_list.append(book + ")")
 
-        # 중복 횟수 세기
-        book_count = {}
-        lists = book_list
-        for i in lists:
-            try:
-                book_count[i] += 1
-            except:
-                book_count[i] = 1
-
-        # 중복 횟수가 2 이상인 아이템의 key만 담기
-        book_duplicated = []
-        for k, v in book_count.items():
-            if v >= 2:
-                book_duplicated.append(k)
-
-        # 비슷한 도서명 찾기
-        similar_books = []
-        for book in book_duplicated:
-            similar_books.extend(difflib.get_close_matches(book, book_list, cutoff=0.8))
-
-        # 출력하기
-        if len(similar_books) > 0:
-            for book in similar_books:
-                st.write('\n', student, "학생의 독서기록 중 비슷한 도서:", book)
-            for i in range(len(similar_books)):
-                st.write(temp[temp['book'].str.contains(similar_books[i][:2])])
-        else:
-            continue
+        for i in range(len(book_list)):
+            for j in range(i+1, len(book_list)):
+                similarity = get_similarity(book_list[i], book_list[j], kiwi)
+                if similarity == 2:
+                    st.write('#### 😱 {} 학생의 중복된 독서기록입니다.'.format(student))
+                    st.write('📙', book_list[i], '📗', book_list[j])
+                    st.write(temp[temp['book'].str.contains(book_list[i][:5])].iloc[:,1:])
+                elif similarity >= cut_off:
+                    st.write('#### {} 학생의 비슷한 독서기록입니다. 유사도:{}'.format(student, np.round(similarity, 2)))
+                    st.write('📙', book_list[i], '📗', book_list[j])
+                    st.write(temp[temp['book'].str.contains(book_list[i][:5])].iloc[:,1:])
+                    st.write(temp[temp['book'].str.contains(book_list[j][:5])].iloc[:,1:])
+                
 
 
+
+
+def get_similarity(str1, str2, kiwi):
+    tokens1 = kiwi.analyze(str1)[0][0]
+    tokens2 = kiwi.analyze(str2)[0][0]
+
+    morphemes1 = [token[0] for token in tokens1]
+    morphemes2 = [token[0] for token in tokens2]
+
+    list_sum = len(morphemes1+morphemes2)
+    set_sum = len(set(morphemes1+morphemes2))
+    similarity = list_sum/set_sum
+    return similarity
+
+cut_off_percent = st.slider("조절할 숫자", min_value=50, max_value=100, step=10, value = 100 )
+cut_off = cut_off_percent*0.014+0.6 # 100이면 2로, 50이면 약 1.3정도로
 
 
 if 'book_record' not in st.session_state:
@@ -118,10 +122,12 @@ if 'book_record' not in st.session_state:
 
 sample_book = pd.read_csv('https://raw.githubusercontent.com/Surihub/RPA/main/data/book_recording_sample.csv')
 
+
 sample_checked = st.checkbox('샘플 파일 중복 기재 확인하기')
 if sample_checked:
     with st.spinner('중복을 확인하는 중 입니다...'):
-        find_duplicate_books(preprocessing(sample_book))
+        find_duplicate_books_2(preprocessing(sample_book), cut_off)
+
 
 book_record = st.file_uploader("파일 업로드해주세요! 준비된 파일이 없을 경우, 위의 '샘플 파일 업로드 해보기' 버튼을 눌러 테스트해보세요.", type="csv")
 if book_record:
@@ -132,6 +138,6 @@ upload_checked = st.checkbox('업로드한 파일 중복 기재 확인하기!')
 if upload_checked:
     with st.spinner('중복을 확인하는 중입니다...'):
         try:
-            find_duplicate_books(preprocessing(st.session_state['book_record']))
+            find_duplicate_books_2(preprocessing(st.session_state['book_record']), cut_off)
         except:
             st.write("⚠올바른 파일을 업로드하셨는지 확인해주세요!")

@@ -11,32 +11,3 @@ st.write('만든 이 : **숩숩**')
 st.write('서울의 한 중학교 수학 교사 & 코딩하는 선생님 커뮤니티 [쪼랩](https://bit.ly/join_zzolab) 운영진')
 st.write('사이트에 대한 피드백 혹은 문의 : ✉ sbhath17@gmail.com ✉')
 st.write('피드백 환영합니다🤩 > [피드백 하러 가기](https://forms.gle/nytXFQiRriwRgkKy7)')
-# import pandas as pd
-# import streamlit as st
-
-# # Create input fields for text and star rating
-# text_input = st.text_input("재미있게 사용하셨다면 후기를 남겨주세요!")
-
-# # Create a styled button for star rating selection
-# star_rating = st.radio("별점을 선택해주세요!", ['⭐','⭐⭐', '⭐⭐⭐', '⭐⭐⭐⭐', '⭐⭐⭐⭐⭐'], index=2,key="rating")
-
-# # Create a submit button
-# if st.button("의견 제출하기"):
-#     # Create a dictionary with the entered data
-#     data = {'Text': [text_input], 'Star Rating': [star_rating]}
-
-#     # Append the data to an existing CSV file or create a new one
-#     df = pd.DataFrame(data)
-
-#     # Check if the CSV file has been created before
-#     if 'csv_created' not in st.session_state:
-#         st.session_state.csv_created = False
-
-#     if not st.session_state.csv_created:
-#         df.to_csv('feedback_rating.csv', index=False)
-#         st.session_state.csv_created = True
-#     else:
-#         df.to_csv('feedback_rating.csv', mode='a', header=False, index=False)
-
-#     # Display a success message
-#     st.success("의견 감사합니다.😀")

@@ -5,5 +5,3 @@ matplotlib
 faker
 kiwi
 python-pptx
-nltk
-pykospacing

@@ -1,13 +1,11 @@
 import streamlit as st
 import pandas as pd
-import difflib
-from difflib import SequenceMatcher
-from kiwipiepy import Kiwi
 import numpy as np
+from kiwipiepy import Kiwi
 
 # 페이지 설명 부분
 st.title("학교생활기록부 독서기록 중복 찾기📚")
-st.write("생활기록부 점검시, 학생마다 독서기록이 중복된 경우가 왕왕 있습니다. 예를 들어 한 학생이 2학년 1학기와 1학년 1학기에 같은 책을 기록한 경우죠! 나이스에서 **반별 독서기록파일**을 csv파일로 다운받아, 아래에 업로드해주세요. 중복된 항목이 출력됩니다. ")
+st.write("생활기록부 점검시, 학생마다 독서기록이 중복된 경우가 왕왕 있습니다. 예를 들어 한 학생이 2학년 1학기와 1학년 1학기에 같은 책을 기록한 경우죠! 나이스에서 **반별 독서기록파일**을 csv파일로 다운받아, 아래에 업로드해주세요. 유사도에 따라 중복되거나 비슷한 형태소로 이뤄진 두 도서가 출력됩니다. ")
 
 def preprocessing(df):
     st.write(df)
@@ -19,50 +17,6 @@ def preprocessing(df):
     original = df.values.tolist()  # list로
     pd.options.display.max_colwidth = 100
     return df
-
-def find_duplicate_books(df):
-    # 중복된 부분 찾기 (1) 책이름과 저자명이 완벽히 일치
-    for student in df.name.unique():
-        # 학생별로 도서명 문자열로 담기
-        temp = df[df.name == student]
-        all_book = temp.book.tolist()
-        book_list_incomplete = []
-        for book_by_row in all_book:
-            book_list_incomplete = book_list_incomplete + book_by_row.split("), ")
-
-        # 빈 문자열 원소 제거 및 괄호 처리하기
-        book_list = []
-        for book in book_list_incomplete:
-            if len(book) == 0:
-                continue
-            elif book[-1] == ")":
-                book_list.append(book)
-            else:
-                book_list.append(book + ")")
-
-        # 중복 횟수 세기
-        book_count = {}
-        lists = book_list
-        for i in lists:
-            try:
-                book_count[i] += 1
-            except:
-                book_count[i] = 1
-
-        # 중복 횟수가 2 이상인 아이템의 key만 담기
-        book_duplicated = []
-        for k, v in book_count.items():
-            if v >= 2:
-                book_duplicated.append(k)
-
-        # 출력하기
-        if len(book_duplicated) > 0:
-            for book in book_duplicated:
-                st.write('\n', student, "학생의 독서기록 중 **", book, "**이 중복되었습니다.")
-            for i in range(len(book_duplicated)):
-                st.write(temp[temp['book'].str.contains(book_duplicated[i][:2])])
-        else:
-            continue
 
 def find_duplicate_books_2(df, cut_off):
     kiwi = Kiwi()
@@ -96,24 +50,31 @@ def find_duplicate_books_2(df, cut_off):
                     st.write('📙', book_list[i], '📗', book_list[j])
                     st.write(temp[temp['book'].str.contains(book_list[i][:5])].iloc[:,1:])
                     st.write(temp[temp['book'].str.contains(book_list[j][:5])].iloc[:,1:])
-                
 
 
 
 
 def get_similarity(str1, str2, kiwi):
+    # 문자열을 Kiwi 형태소 분석기를 사용하여 형태소로 분석
     tokens1 = kiwi.analyze(str1)[0][0]
     tokens2 = kiwi.analyze(str2)[0][0]
 
+    # 형태소들을 추출하여 리스트에 저장
     morphemes1 = [token[0] for token in tokens1]
     morphemes2 = [token[0] for token in tokens2]
 
-    list_sum = len(morphemes1+morphemes2)
-    set_sum = len(set(morphemes1+morphemes2))
-    similarity = list_sum/set_sum
+    # 두 리스트의 길이의 합과 중복을 제외한 요소의 개수를 계산
+    list_sum = len(morphemes1 + morphemes2)
+    set_sum = len(set(morphemes1 + morphemes2))
+
+    # 유사도 계산 (두 리스트의 길이의 합을 중복을 제외한 요소의 개수로 나눔)
+    similarity = list_sum / set_sum
+
+    # 유사도 반환
     return similarity
 
-cut_off_percent = st.slider("조절할 숫자", min_value=50, max_value=100, step=10, value = 100 )
+
+cut_off_percent = st.slider("유사도(%)를 설정해주세요. 유사도가 100인 경우 완전히 일치하는 도서가 출력됩니다.", min_value=50, max_value=100, step=10, value = 100 )
 cut_off = cut_off_percent*0.014+0.6 # 100이면 2로, 50이면 약 1.3정도로
 
 

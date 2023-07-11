@@ -48,7 +48,7 @@ if variable_type == "수치형":
         if colname != "":
 
             data = df[colname]
-            # 데이터의 요약 통계량 계산
+            # 데이터의 기술통계량 계산
             summary_stats = pd.DataFrame({
                 '평균': np.mean(data),
                 '표준편차': np.std(data),

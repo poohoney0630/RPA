@@ -99,10 +99,10 @@ def grouping(df, k):
         st.write(col, '(을/를) 고려하여 학생을 모둠별로 편성한 결과를 보려면 아래 버튼을 클릭해주세요. ')
         if st.button('편성하기'):
             # 범주 편성 코드
-            epsilon_sum = float(st.text_input('그룹별 표준편차의 합의 임계값을 선택해주세요. ', value = 5))
-            epsilon_std = float(st.text_input('그룹별 표준편차의 표준편차의 임계값을 선택해주세요. ', value = 0.5))
+            epsilon_sum = float(st.text_input('그룹별 표준편차의 합의 임계값을 선택해주세요. ', value = 2.0))
+            epsilon_std = float(st.text_input('그룹별 표준편차의 표준편차의 임계값을 선택해주세요. ', value = 0.10))
             categorical_data_grouping(df, col, epsilon_sum, epsilon_std)
-            st.write('hello categorical')
+            # st.write('hello categorical')
     #return sample_random
 
 
@@ -136,7 +136,7 @@ def categorical_data_grouping(df, col, epsilon_sum, epsilon_std):
     group_std_sum, group_std_std, df_group = calculate_group_std_sum_and_std()
 
     while group_std_sum > epsilon_sum or group_std_std > epsilon_std:  # 수정된 조건문
-        if group_std_sum < previous_group_std_sum and group_std_std < previous_group_std_std:
+        if (group_std_sum < previous_group_std_sum) and (group_std_std < previous_group_std_std):
             st.write(f"그룹별 표준편차 합: {np.round(group_std_sum,2)}, 그룹별 표준편차의 표준편차: {np.round(group_std_std, 2)}")
 
         previous_group_std_sum = group_std_sum
@@ -145,7 +145,6 @@ def categorical_data_grouping(df, col, epsilon_sum, epsilon_std):
         
     st.write('최종 그룹별 표준편차 합:', group_std_sum)
     st.write('최종 그룹별 표준편차의 표준편차:', group_std_std)
-
     st.write(df_group)
 
     result = []

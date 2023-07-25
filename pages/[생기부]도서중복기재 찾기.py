@@ -40,13 +40,14 @@ def find_duplicate_books_2(df, cut_off):
 
         for i in range(len(book_list)):
             for j in range(i+1, len(book_list)):
-                similarity = get_similarity(book_list[i], book_list[j], kiwi)
+                similarity, morphs = get_similarity(book_list[i], book_list[j], kiwi)
                 if similarity == 2:
                     st.write('#### 😱 {} 학생의 중복된 독서기록입니다.'.format(student))
                     st.write('📙', book_list[i], '📗', book_list[j])
                     st.write(temp[temp['book'].str.contains(book_list[i][:5])].iloc[:,1:])
                 elif similarity >= cut_off:
                     st.write('#### {} 학생의 비슷한 독서기록입니다. 유사도:{}'.format(student, np.round(similarity, 2)))
+                    # st.write(morphs)#########
                     st.write('📙', book_list[i], '📗', book_list[j])
                     st.write(temp[temp['book'].str.contains(book_list[i][:5])].iloc[:,1:])
                     st.write(temp[temp['book'].str.contains(book_list[j][:5])].iloc[:,1:])
@@ -62,6 +63,11 @@ def get_similarity(str1, str2, kiwi):
     # 형태소들을 추출하여 리스트에 저장
     morphemes1 = [token[0] for token in tokens1]
     morphemes2 = [token[0] for token in tokens2]
+    morphemes1.remove('(')
+    morphemes1.remove(')')
+    morphemes2.remove('(')
+    morphemes2.remove(')')
+    morphs = [morphemes1, morphemes2]
 
     # 두 리스트의 길이의 합과 중복을 제외한 요소의 개수를 계산
     list_sum = len(morphemes1 + morphemes2)
@@ -71,8 +77,10 @@ def get_similarity(str1, str2, kiwi):
     similarity = list_sum / set_sum
 
     # 유사도 반환
-    return similarity
+    return similarity, morphs
 
+st.write(get_similarity('기억 전달자(로이스 로리)',
+                        '1984(조지 오웰)', Kiwi()))
 
 cut_off_percent = st.slider("유사도(%)를 설정해주세요. 유사도가 100인 경우 완전히 일치하는 도서가 출력됩니다.", min_value=50, max_value=100, step=10, value = 100 )
 cut_off = cut_off_percent*0.014+0.6 # 100이면 2로, 50이면 약 1.3정도로

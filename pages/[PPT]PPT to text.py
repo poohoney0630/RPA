@@ -3,7 +3,10 @@ import pptx
 
 # 페이지 설명 부분
 st.title("🖨PPT 파일 열지않고 바로 읽기")
+st.write("### 🤯 언제 사용하나요?")
 st.write("PPT파일을 열어서 참고하기 귀찮을 때, 정리되지 않은 PPT 파일을 한번에 출력하고 싶을 때! 모든 텍스트를 읽어 한꺼번에 출력해드립니다.")
+st.write("### 💡 PPT 파일 업로드 ➡ 슬라이드별 내용 출력")
+
 st.write("※ 업로드하신 PPT는 따로 저장되지 않으므로 걱정하지 않으셔도 됩니다. ")
 
 def parse_pptx(pptx_file):

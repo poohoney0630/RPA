@@ -7,7 +7,10 @@ import random
 from faker import Faker
 
 st.title("학생들의 특성을 바탕으로 조 편성하기🤼‍♂️")
+
+st.write("### 🤯 언제 사용하나요?")
 st.write("수업 등에서 모둠을 구성할 때, 일반적으로 랜덤으로 편성을 많이 합니다. 하지만 가끔 경우에 따라 학생들의 특성에 따라 조를 편성하면 좋은 경우가 있습니다. 예를 들어 모둠별로 문제를 해결해야 하는 수업에서 점수가 낮은 학생들만 모여있다면 원활하게 진행되지 않겠죠? 혹은, 학생들의 특성이 어느정도는 달라야 서로 상호작용을 하며 배우는 것이 더 많을텐데요! 이러한 점을 고려해서 모둠을 편성하는 예시입니다. 완성된 결과를 보고, 꼭 검토 후 사용해주세요!")
+st.write("### 💡 학생 데이터를 업로드하여 특성 고려한 편성")
 # seed를 고정시키는 코드
 seed = 1234
 
@@ -64,10 +67,7 @@ def grouping(df, k):
     if selected_option == '랜덤':
         if st.button('편성하기'):
             st.write('랜덤으로 모둠을 편성합니다.')
-
             n = len(df)
-            # 인원수 리스트 생성
-            
             # 랜덤 셔플
             sample_random = df.sample(frac=1).reset_index(drop=True)
             # 그룹 부여
@@ -75,7 +75,6 @@ def grouping(df, k):
             # 리스트 nb_of_st_list를 사용하여 'group' 열에 값을 할당
             start = 0
             nb_of_st_list = divide_n_into_k_parts(n, k)
-
             for i, nb in enumerate(nb_of_st_list):
                 end = start + nb
                 sample_random.loc[start:end-1, 'group'] = i + 1
@@ -88,18 +87,14 @@ def grouping(df, k):
         if st.button('편성하기'):
             # 수치 편성 코드
             # ...
-            st.write('hello numerical')
+            st.write('준비중입니다. ')
 
     elif selected_option == '범주':
         col = st.selectbox('기준이 되는 열 이름을 선택해주세요', ['특성', '에너지'])
         st.write(col, '(을/를) 고려하여 학생을 모둠별로 편성한 결과를 보려면 아래 버튼을 클릭해주세요. ')
         if st.button('편성하기'):
             # 범주 편성 코드
-            #epsilon_sum = float(st.text_input('그룹별 표준편차의 합의 임계값을 선택해주세요. ', value = 2.0))
-            #epsilon_std = float(st.text_input('그룹별 표준편차의 표준편차의 임계값을 선택해주세요. ', value = 0.10))
             categorical_data_grouping(df, col)#, epsilon_sum, epsilon_std)
-            # st.write('hello categorical')
-    #return sample_random
 
 def categorical_data_grouping(df, col):#, epsilon_sum, epsilon_std):
 
@@ -119,7 +114,7 @@ def categorical_data_grouping(df, col):#, epsilon_sum, epsilon_std):
         return group_stds, df_group
 
     df = df_group
-    for i in range(10):
+    for i in range(100):
         group_stds, df = calculate_group_std_sum_and_std(df)
 
         # 임의의 두 그룹 선택
@@ -135,22 +130,16 @@ def categorical_data_grouping(df, col):#, epsilon_sum, epsilon_std):
         df.loc[p1, 'group'] = g2
         df.loc[p2, 'group'] = g1
 
-
-
         # 새로운 a, b, c 계산
         new_group_stds, new_df = calculate_group_std_sum_and_std(df)
-        # if i%10==0:
-        #     st.write(i, '......',np.sum(group_stds))
-        # 이전 값과 비교하여 조건 검사
+
         if np.sum(new_group_stds) < np.sum(group_stds):
             # st.write('update...', np.sum(group_stds), np.sum(new_group_stds))
             # st.write(group_stds, new_group_stds)
             df = new_df
         else:
             df = df
-            # st.write("stay")
-            # st.write(group_stds)
-        st.write(df)
+        #st.write(df)
 
     st.write('### 트레이딩 후')
     st.write(df)
@@ -179,6 +168,7 @@ if 'student_data' not in st.session_state:
 
 if sample_checked:
     with st.spinner('조 편성 중 ...'):
+        st.write('???')
         
         grouping(sample_data, k)
 
@@ -187,10 +177,12 @@ if sample_checked:
 student_data = st.file_uploader("학생 데이터 csv 파일을 업로드해주세요! 준비된 파일이 없을 경우, 아래 '샘플 파일 업로드 해보기' 버튼을 눌러 테스트해보세요.", type="csv")
 
 if student_data:
-    student_data = pd.read_csv(student_data, encoding = 'euc-kr')
+    student_data = pd.read_csv(student_data, encoding = 'utf-8')
     st.session_state['student_data'] = student_data
+
 upload_checked = st.checkbox('업로드한 파일 조 편성하기!')
 if upload_checked:
+    st.write(student_data.head(5))
     with st.spinner('조 편성 중...'):
         try:
             k = int(st.text_input('모둠 수를 입력하세요:', value=8)) # 그룹의 개수

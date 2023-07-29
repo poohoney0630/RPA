@@ -185,10 +185,12 @@ if sample_checked:
 student_data = st.file_uploader("학생 데이터 csv 파일을 업로드해주세요! 준비된 파일이 없을 경우, 아래 '샘플 파일 업로드 해보기' 버튼을 눌러 테스트해보세요.", type="csv")
 
 if student_data:
-    student_data = pd.read_csv(student_data, encoding = 'euc-kr')
+    student_data = pd.read_csv(student_data, encoding = 'utf-8')
     st.session_state['student_data'] = student_data
+    
 upload_checked = st.checkbox('업로드한 파일 조 편성하기!')
 if upload_checked:
+    st.write(student_data.head(5))
     with st.spinner('조 편성 중...'):
         try:
             k = int(st.text_input('모둠 수를 입력하세요:', value=8)) # 그룹의 개수

@@ -6,17 +6,54 @@ import matplotlib.patheffects as path_effects
 import pandas as pd
 import numpy as np
 
-st.title("데이터 시각화📊")
+st.title("📊데이터 시각화")
+st.write("### 🤯 언제 사용하나요?")
+st.write("표 형태의 데이터를 분석하고 싶은데, 새로운 툴을 써서 하긴 귀찮다구요? seaborn에서 데이터셋을 불러오거나, 파일을 업로드하여 범주형인지, 수치형인지에 따라 빠르게 시각화해보세요. ")
+st.write("### 💡 데이터셋 & 특성 ➡ 시각화")
+
+
+# seaborn
+st.write("### 1️⃣ seaborn에서 데이터셋 불러오기")
 dataset_name = st.text_input('데이터 예시: titanic, tips, taxis, penguins, iris...:')
 
-try:
-    df = sns.load_dataset(dataset_name)
-    st.write(df.head(5))
+if 'custom_data' not in st.session_state:
+    st.session_state['custom_data'] = '' #?
 
-except ValueError:
-    st.write("올바른 데이터 이름을 써주세요!")
-    st.stop()
+sample_checked = st.checkbox('seaborn데이터 확인하기')
+if sample_checked:
+    with st.spinner('샘플 데이터를 불러오는 중 입니다...'):
+        try:
+            df = sns.load_dataset(dataset_name)
+            st.write(df.head(5))
+        except:
+            st.write("⚠데이터셋 이름을 다시 확인해주세요!")
 
+
+
+
+# custom
+st.write("### 2️⃣ 파일 업로드해서 불러오기")
+st.write("단, 2️⃣의 경우에는 csv파일만 가능합니다. ")
+
+custom_data = st.file_uploader("분석하고 싶은 파일을 업로드해주세요.", type="csv")
+if custom_data:
+    custom_data = pd.read_csv(custom_data, encoding = 'utf-8')
+    st.session_state['custom_data'] = custom_data
+
+upload_checked = st.checkbox('업로드한 파일 확인하기!')
+if upload_checked:
+    with st.spinner('중복을 확인하는 중입니다...'):
+        try:
+            st.write(custom_data.head(5))
+            df = custom_data
+        except:
+            st.write("⚠올바른 파일을 업로드하셨는지 확인해주세요!")
+
+###########
+
+
+
+st.write("### 3️⃣ 변량 유형에 따른 데이터 시각화")
 # 라디오 버튼 생성
 variable_type = st.radio("변량 유형 선택", ("수치형", "범주형"))
 
@@ -103,7 +140,7 @@ if variable_type == "수치형":
         st.write("올바른 열 이름을 써주세요!")
         st.stop()
 
-
+# 범주형
 else:
     # 변량이 범주형인 경우 실행되는 코드
     st.write("범주형 데이터를 막대그래프로 표현합니다.")

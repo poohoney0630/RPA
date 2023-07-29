@@ -31,3 +31,5 @@ st.write('made by **숩숩** ✉ sbhath17@gmail.com ✉ 피드백 환영합니�
 # st.write("updated🕑 :",time.strftime('%Y.%m.%d %H:%M:%S'))
 st.write("version_2.0, updated 23.7.7")
 
+def info_page():
+    st.write("## 🤯 언제 사용하나요?")

@@ -4,9 +4,11 @@ import numpy as np
 from kiwipiepy import Kiwi
 
 # 페이지 설명 부분
-st.title("학교생활기록부 독서기록 중복 찾기📚")
+st.title("📚학생부 독서기록 중복 찾기")
+st.write("### 🤯 언제 사용하나요?")
 st.write("생활기록부 점검시, 학생마다 독서기록이 중복된 경우가 왕왕 있습니다. 예를 들어 한 학생이 2학년 1학기와 1학년 1학기에 같은 책을 기록한 경우죠! 나이스에서 **반별 독서기록파일**을 csv파일로 다운받아, 아래에 업로드해주세요. 유사도에 따라 중복되거나 비슷한 형태소로 이뤄진 두 도서가 출력됩니다. ")
-
+st.write("### 💡 독서기록.csv ➡ 중복된 항목 출력")
+         
 def preprocessing(df):
     st.write(df)
     df = df.iloc[3:, :6]
@@ -52,9 +54,6 @@ def find_duplicate_books_2(df, cut_off):
                     st.write(temp[temp['book'].str.contains(book_list[i][:5])].iloc[:,1:])
                     st.write(temp[temp['book'].str.contains(book_list[j][:5])].iloc[:,1:])
 
-
-
-
 def get_similarity(str1, str2, kiwi):
     # 문자열을 Kiwi 형태소 분석기를 사용하여 형태소로 분석
     tokens1 = kiwi.analyze(str1)[0][0]
@@ -79,12 +78,8 @@ def get_similarity(str1, str2, kiwi):
     # 유사도 반환
     return similarity, morphs
 
-st.write(get_similarity('기억 전달자(로이스 로리)',
-                        '1984(조지 오웰)', Kiwi()))
-
 cut_off_percent = st.slider("유사도(%)를 설정해주세요. 유사도가 100인 경우 완전히 일치하는 도서가 출력됩니다.", min_value=50, max_value=100, step=10, value = 100 )
 cut_off = cut_off_percent*0.014+0.6 # 100이면 2로, 50이면 약 1.3정도로
-
 
 if 'book_record' not in st.session_state:
     st.session_state['book_record'] = ''

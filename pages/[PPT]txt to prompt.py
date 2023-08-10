@@ -48,7 +48,22 @@ prompt = st.text_area("Prompt 입력창")
 if prompt:
     st.session_state['prompt'] = prompt
 
-if st.button("PPT로 변환하기"):
+
+
+if st.button("문장 슬라이스 미리보기"):
+    # real code
+    sents = txt_2_sentence_Kiwi(prompt)
+    sents = less_than_100(sents)
+    for i in range(5):
+        sents = almost_100(sents)
+    for i in range(len(sents)):
+       st.write("### slide",i)
+       st.write(sents[i])
+
+
+
+
+if st.button("이대로 PPT로 변환하기"):
     prs = Presentation()
     # real code
     sents = txt_2_sentence_Kiwi(prompt)
@@ -72,4 +87,4 @@ if st.button("PPT로 변환하기"):
     prs.save(ppt_bytes)
     ppt_bytes.seek(0)
 
-    st.download_button(label="눌러서 파일 다운로드 받기", data=ppt_bytes, file_name=output_file_name+".pptx", mime="application/vnd.openxmlformats-officedocument.presentationml.presentation")
+    st.download_button(label="완성! 눌러서 파일 다운로드 받기", data=ppt_bytes, file_name=output_file_name+".pptx", mime="application/vnd.openxmlformats-officedocument.presentationml.presentation")

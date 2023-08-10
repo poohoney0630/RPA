@@ -1,52 +1,41 @@
-import numpy as np
-import altair as alt
-import pandas as pd
 import streamlit as st
-import datetime
-import time
 import random
+import numpy as np
+import time
 # 페이지 설명 부분
 
 st.title("수학 문제 무한 생성기!🖍")
-st.info('###### 언제 사용하나요?\n연습이 필요한 계산 문제가 항상 부족하다구요? 문제 찾기 귀찮다구요?숫자만 바꿔도 되는 문제라면, 문제를 자동으로 만들고 채점도 자동으로 해보세요! ')
+st.info('###### 언제 사용하나요?\n연습이 필요한 계산 문제가 항상 부족하다구요? 문제 찾기 귀찮다구요? 숫자만 바꿔도 되는 문제라면, 문제를 자동으로 만들고 채점도 자동으로 해보세요! ')
 st.warning('###### 어떻게 해결하나요?\n계수가 다른 일차방정식 문제 무한 생성')
 
 st.write('아래의 일차방정식의 해를 구하세요.')
 st.write('예를 들어, 2x-1=3인 경우 답안에는 2만 입력하면 됩니다. ')
 
-# Initialize equation numbers and index
-if "equation_nums" not in st.session_state:
-    st.session_state.equation_nums = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # Example equation numbers
 
-if "equation_index" not in st.session_state:
-    st.session_state.equation_index = 0
+# 1. 임의의 일차방정식 생성 함수
+def generate_equation():
+    a = random.randint(1, 10)
+    b = random.randint(1, 10)
+    c = random.randint(1, 10)
+    equation = f"{a}x + {b} = {c}"
+    return equation, np.round((c-b)/a,2)
 
-equation_nums = st.session_state.equation_nums
-equation_index = st.session_state.equation_index
 
-# Retrieve equation numbers based on index
-a, b, c = equation_nums[equation_index * 3: equation_index * 3 + 3]
-equation_str = '## $${}x-{}={}$$'.format(a, b, c)
+# 문제 생성 버튼
+if st.button("문제 생성"):
+    equation, solution = generate_equation()
+    st.session_state.equation = equation
+    st.session_state.solution = solution
 
-# User input and answer
-user_input = st.number_input("아래 방정식에 대한 답을 입력하세요(소수 둘째자리에서 반올림)")
-answer = np.round((b + c) / a, 1)
-st.write(equation_str)
+# 문제 제시
+if 'equation' in st.session_state:
+    st.write(f"## 😀 $${st.session_state.equation}$$")
+    # 답안 입력 및 제출
+    answer = st.number_input("방정식에 대한 답을 입력하세요(소수 둘째자리에서 반올림)")
+    if st.button("제출"):
+        if answer == st.session_state.solution:
+            st.success("🎉정답입니다! 💯 참 잘했어요. **문제 생성** 버튼을 눌러 다음 문제를 해결해보세요.")
+        else:
+            st.error("😓오답입니다! 다시 한 번 시도해보세요!💪")
+            st.write(f"힌트: 이항을 먼저 하고, $$x$$의 계수로 나눠주세요. ")
 
-# Checking the answer
-if st.button('정답 확인하기!'):
-    if user_input == answer:
-        st.write('## 🎉정답입니다! ')
-        st.write("참 잘했어요. 다음 문제를 해결해보세요.")
-    else:
-        st.write('## 😓오답입니다! ')
-        st.write("다시 한 번 시도해보세요!💪")
-    st.write(f"정답은 {answer} 입니다.")
-
-# Update button
-if st.button('다음 문제 풀기'):
-    equation_index += 1
-    if equation_index * 3 + 3 > len(equation_nums):
-        random.shuffle(equation_nums)
-        equation_index = 0
-    st.session_state.equation_index = equation_index

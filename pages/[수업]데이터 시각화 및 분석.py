@@ -6,9 +6,9 @@ import matplotlib.patheffects as path_effects
 import pandas as pd
 import numpy as np
 
-st.title("📊데이터 시각화")
+st.title("📊데이터 시각화 및 분석")
 st.info('###### 언제 사용하나요?\n표 형태의 데이터를 분석하고 싶은데, 새로운 툴을 써서 하긴 귀찮다구요? seaborn에서 데이터셋을 불러오거나, 파일을 업로드하여 범주형인지, 수치형인지에 따라 빠르게 시각화해보세요. ')
-st.warning('###### 어떻게 해결하나요?\n데이터셋 & 특성 ➡ 시각화')
+st.warning('###### 어떻게 해결하나요?\n데이터셋 & 특성 ➡ 시각화 & 분석')
 
 
 # seaborn
@@ -36,7 +36,7 @@ st.write("단, 2️⃣의 경우에는 csv파일만 가능합니다. ")
 
 custom_data = st.file_uploader("분석하고 싶은 파일을 업로드해주세요.", type="csv")
 if custom_data:
-    custom_data = pd.read_csv(custom_data, encoding = 'utf-8')
+    custom_data = pd.read_csv(custom_data, encoding = 'euc-kr')
     st.session_state['custom_data'] = custom_data
 
 upload_checked = st.checkbox('업로드한 파일 확인하기!')
@@ -54,7 +54,7 @@ if upload_checked:
 
 st.write("### 3️⃣ 변량 유형에 따른 데이터 시각화")
 # 라디오 버튼 생성
-variable_type = st.radio("변량 유형 선택", ("수치형", "범주형"))
+variable_type = st.radio("일변량 데이터를 선택해주세요.", ("수치형", "범주형"))
 
 
 def get_slider_step(min_value, max_value):
@@ -140,7 +140,7 @@ if variable_type == "수치형":
         st.stop()
 
 # 범주형
-else:
+elif variable_type =='범주형':
     # 변량이 범주형인 경우 실행되는 코드
     st.write("범주형 데이터를 막대그래프로 표현합니다.")
 
@@ -163,6 +163,103 @@ else:
                                           path_effects.Normal()])
 
             plt.title('Barplot of {}'.format(colname))
+            sns.set_style("darkgrid")
+            plt.xlabel("")
+            st.pyplot(fig)
+
+    except ValueError:
+        st.write("올바른 열 이름을 입력해주세요!")
+        st.stop()
+
+
+variable_type_group = st.radio("그룹별 데이터를 선택해주세요. (예: 클래스에 따른 생존율)", ("수치형", "범주형"))
+
+
+if variable_type_group == "수치형":
+    # 변량이 수치형인 경우 실행되는 코드
+    st.write("그룹별 수치형 데이터를 히스토그램과 상자그림으로 표현합니다. ")
+
+
+    try:
+        colname_group = st.text_input("그룹 열 이름을 써주세요!")
+        colname_2 = st.text_input("그룹별로 시각화하고 싶은 수치형 열 이름을 써주세요!")
+        if colname_2 != "":
+
+            data = df[[colname_2, colname_group]]
+            # 데이터의 기술통계량 계산
+            stat = data.groupby(colname_group)[colname_2].agg(
+                mean='mean',
+                std='std',
+                min='min',
+                median='median',
+                max='max'
+            )
+            stat.columns = ['평균', '표준편차', '최솟값', '중앙값', '최댓값']
+            st.write(stat)
+
+            minvalue = min(df[colname_2])
+            maxvalue = max(df[colname_2])
+            st.write(colname_2, '의 최솟값:', minvalue, '의 최댓값:',maxvalue)
+            bins_size_min, bins_size_max, step = get_slider_step(minvalue, maxvalue)
+            st.write(step)
+            bins_size = st.slider("계급의 크기를 설정해주세요. (group)",
+                                min_value=bins_size_min, 
+                                max_value=bins_size_max, 
+                                step=step)
+
+            # Create a figure and adjust the histogram parameters
+            fig = plt.figure(figsize=(5, 3))
+
+            st.write("히스토그램의 계급의 크기:",bins_size)
+            # Plot the histogram with adjusted parameters
+            sns.set_style("darkgrid")
+            plt.title('Histogram of {}'.format(colname_2))
+            sns.histplot(data = data, x = colname_2, hue = colname_group, binwidth=bins_size, binrange = [min(df[colname_2]), max(df[colname_2])], kde=False)
+            plt.xlabel("")
+            st.pyplot(fig)
+
+            # 이상치 숨기기 체크박스
+            hide_outliers = st.checkbox("이상치 숨기기 ")
+
+            # 이상치를 숨기는 옵션 설정
+            showfliers = not hide_outliers
+            fig2 = plt.figure(figsize=(5, 5))
+            plt.title('Boxplot of {}'.format(colname_2))
+            sns.set_style("darkgrid")
+            # 박스 플롯 그리기
+            sns.boxplot(data = df, x = colname_group, y = colname_2, palette="Set2", showfliers=showfliers)
+            plt.xlabel("")
+            st.pyplot(fig2)
+
+    except ValueError:
+        st.write("올바른 열 이름을 써주세요!")
+        st.stop()
+
+# 범주형
+elif variable_type_group=='범주형':
+    # 변량이 범주형인 경우 실행되는 코드
+    st.write("범주형 데이터를 막대그래프로 표현합니다.")
+
+    try:
+        colname_group = st.text_input("그룹 열 이름을 써주세요!")
+        colname_2 = st.text_input("그룹별로 시각화하고 싶은 수치형 열 이름을 입력해주세요!")
+        if colname_2 != "":
+            # Create a figure and adjust the bar plot parameters
+            fig = plt.figure(figsize=(5,3))
+            ax = sns.countplot(x=df[colname_2], palette="Blues")
+
+            # Add frequency labels on top of each bar with white outline
+            for p in ax.patches:
+                height = p.get_height()
+                ax.annotate(format(height, ','),
+                            (p.get_x() + p.get_width() / 2, height),
+                            ha='center', va='center',
+                            xytext=(0, -10), textcoords='offset points',
+                            fontsize=10, color='black',
+                            path_effects=[path_effects.Stroke(linewidth=3, foreground='white'),
+                                          path_effects.Normal()])
+
+            plt.title('Barplot of {}'.format(colname_2))
             sns.set_style("darkgrid")
             plt.xlabel("")
             st.pyplot(fig)

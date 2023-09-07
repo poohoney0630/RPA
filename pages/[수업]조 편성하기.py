@@ -7,8 +7,11 @@ import matplotlib.pyplot as plt
 
 st.title("특성을 바탕으로 조 편성하기🤼‍♂️")
 
-st.info('###### 언제 사용하나요?\n몇개의 번호 중에서 여러 번호를 추첨할 때! ')
-st.warning('###### 어떻게 해결하나요?\n학생 데이터를 업로드하여 특성 고려한 편성')
+col1, col2 = st.columns(2)
+with col1:
+    st.info('###### 언제 사용하나요?\n몇개의 번호 중에서 여러 번호를 추첨할 때! ')
+with col2:
+    st.warning('###### 어떻게 해결하나요?\n학생 데이터를 업로드하여 특성 고려한 편성')
 
 # seed를 고정시키는 코드
 seed = 1234

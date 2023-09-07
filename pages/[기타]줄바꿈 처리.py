@@ -1,9 +1,13 @@
 import streamlit as st
 
+
 st.title("✅줄바꿈 띄어쓰기 마스터")
 
-st.info('###### 언제 사용하나요?\npdf에서 텍스트를 복사해올 때, 줄바꿈이 제멋대로여서 delete&space 여러 번 하신 적 있나요? 아래에서 간단하게 처리해보세요! ')
-st.warning('###### 어떻게 해결하나요?\n줄바꿈 이상한 텍스트 ➡ 줄바꿈 없이 정리된 텍스트')
+col1, col2 = st.columns(2)
+with col1:
+    st.info('###### 언제 사용하나요?\npdf에서 텍스트를 복사해올 때, 줄바꿈이 제멋대로여서 delete&space 여러 번 하신 적 있나요? 아래에서 간단하게 처리해보세요! ')
+with col2:
+    st.warning('###### 어떻게 해결하나요?\n줄바꿈 이상한 텍스트 ➡ 줄바꿈 없이 정리된 텍스트')
 def split_by_enter(text):
     return text.split('\n')
 

@@ -5,8 +5,12 @@ from kiwipiepy import Kiwi
 from pptx import Presentation
 
 st.title("🖨 발표용 프롬프트 만들기")
-st.info('###### 언제 사용하나요?\n강의 준비할 때, 긴 문단을 입력하면 적당히 문장별로 끊어서 PPT로 만들어 드립니다.')
-st.warning('###### 어떻게 해결하나요?\n텍스트 입력 ➡ 문장별로 끊어서 슬라이드로!')
+
+col1, col2 = st.columns(2)
+with col1:
+  st.info('###### 언제 사용하나요?\n강의 준비할 때, 긴 문단을 입력하면 적당히 문장별로 끊어서 PPT로 만들어 드립니다.')
+with col2:
+  st.warning('###### 어떻게 해결하나요?\n텍스트 입력 ➡ 문장별로 끊어서 슬라이드로!')
 
 output_file_name = st.text_input("출력할 파일명을 입력해주세요. ", 'prompt')
 max_number = st.number_input("한 슬라이드에 몇자 이내로 들어가게 할까요?", value = 100)

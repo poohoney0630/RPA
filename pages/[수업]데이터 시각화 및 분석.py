@@ -17,7 +17,7 @@ with col2:
 
 # seaborn
 st.write("### 1️⃣ seaborn에서 데이터셋 불러오기")
-dataset_name = st.text_input('데이터 예시: titanic, tips, taxis, penguins, iris...:')
+dataset_name = st.text_input('데이터 예시: titanic, tips, taxis, penguins, iris...:', 'titanic')
 
 if 'custom_data' not in st.session_state:
     st.session_state['custom_data'] = '' #?

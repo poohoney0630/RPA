@@ -1,7 +1,7 @@
 import random
 import streamlit as st
 
-st.title("오늘은 몇번이 발표해볼까~?🤗")
+st.title("오늘은 누가 발표해볼까~?🤗")
 
 col1, col2 = st.columns(2)
 with col1:        

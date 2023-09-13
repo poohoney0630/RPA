@@ -19,17 +19,10 @@ import random
 
 st.write("# 😎Welcome to RPA in SCHOOL! 👋")
 st.write("업무자동화 페이지에 오신 것을 환영합니다!")
-st.write("왼쪽의 기능들을 살펴보세요!")
-st.write("- 도서중복기재 찾기")
-st.write("- 데이터 시각화")
-st.write("- 수학문제 생성기")
-st.write("- 오늘은 몇번?")
-st.write("- 조 편성하기")
-st.write("- 문항 배점 정하기")
-st.markdown("----")
-st.write('made by **숩숩** ✉ sbhath17@gmail.com ✉ 피드백 환영합니다🤩 > [피드백 하러 가기](https://forms.gle/nytXFQiRriwRgkKy7)')
-# st.write("updated🕑 :",time.strftime('%Y.%m.%d %H:%M:%S'))
-st.write("version_2.0, updated 23.7.7")
+st.write("왼쪽 사이드바의 기능들을 살펴보세요!")
 
-def info_page():
-    st.write("## 🤯 언제 사용하나요?")
+st.markdown("----")
+st.write('made by **숩숩** ✉ sbhath17@gmail.com ✉ ')
+st.write('피드백 환영합니다🤩 > [피드백 하러 가기](https://forms.gle/nytXFQiRriwRgkKy7)')
+# st.write("updated🕑 :",time.strftime('%Y.%m.%d %H:%M:%S'))
+st.write("version_2.0, updated 2023.9.12")

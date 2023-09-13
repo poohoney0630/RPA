@@ -5,7 +5,7 @@ import numpy as np
 st.title("📊데이터 생성하기")
 col1, col2 = st.columns(2)
 with col1:
-    st.info('###### 언제 사용하나요?\n피벗테이블을 원시자료로 녹일 때!')
+    st.info('###### 언제 사용하나요?\n피벗테이블을 원시자료로 녹일 때! 대부분의 데이터 시각화 툴은 원자료(raw data)형태로 입력받기 떄문에 분할표(피벗테이블)을 원자료로 녹일 때 사용합니다.')
 with col2:
     st.warning('###### 어떻게 해결하나요?\npd.melt기능과 유사합니다. ')
 
@@ -14,12 +14,12 @@ st.write("### 범주형 데이터")
 st.write("변수명과 빈도수를 입력해주세요.")
 
 # 단변량
-var_name = st.text_input("변수명을 입력해주세요. (예:학교급)")
-val_list = st.text_input("변수의 값을 나열해주세요. (예:초,중,고)")
+var_name = st.text_input("변수명을 입력해주세요. (예:학교급)", "학교급")
+val_list = st.text_input("변수의 값을 나열해주세요. (예:초,중,고)", "초,중,고")
 val_list = list(map(str, val_list.split(",")))
 val_count_list = []
 for val in val_list:
-    val_count = st.number_input(f"{val}의 빈도수")
+    val_count = st.number_input(f"{val}의 빈도수", 10)
     val_count_list.append(val_count)
 
 data = []
@@ -27,7 +27,9 @@ for val, val_count in zip(val_list, val_count_list):
     for i in range(int(val_count)):
         data.append(val)
 df = pd.DataFrame(data)
+df.columns = [var_name]
 st.write(df)
+st.info("이변량 자료의 경우 업데이트 예정입니다. ")
 
 # 다변량 케이스
 # num_variables = int(st.text_input("다변량 변수 수를 입력하세요:", value='2'))

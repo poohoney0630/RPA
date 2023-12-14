@@ -6,3 +6,6 @@ faker
 kiwi
 kiwipiepy
 python-pptx
+streamlit-cropper
+pillow
+pdf2image

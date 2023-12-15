@@ -20,27 +20,9 @@ with col2:
 contents = st.text_area("빈칸을 만들 내용을 입력해주세요", value="의사는 인간의 존엄과 가치를 존중하며, 의료를 적정하고 공정하게 시행하여 인류의 건강을 보호증진함에 헌신한다. ")
 
 
-
-
-
-tab1, tab2 = st.tabs(['수작업', '자동화'])
-with tab1:
-    # 형태소 분석
-    kiwi = Kiwi()
-    tokens = kiwi.analyze(contents)[0][0]
-
-    # 명사를 저장할 집합
-    nouns = set()
-
-    # 각 토큰에 대해 명사 추출
-    for token in tokens:
-        if token.tag == "NNG":
-            nouns.add(token.form)
-
-    # 명사 선택 위젯
-    selected_nouns = st.multiselect('빈칸으로 만들 명사를 선택하세요', list(nouns))
-
-    # '생성하기' 버튼
+@st.cache_data
+def show_download():
+        # '생성하기' 버튼
     if st.button('빈칸 뚫기 미리보기'):
         # 체크된 명사를 빈칸으로 치환
         for noun in selected_nouns:
@@ -59,7 +41,89 @@ with tab1:
             f.seek(0)
             st.download_button('워드 파일로 다운로드하기', f, file_name='학습지.docx')
 
+
+tab1, tab2, tab3 = st.tabs(['수작업[가나다순]', '문장별로 키워드 선택하기', '자동화'])
+with tab1:
+    # 형태소 분석
+    kiwi = Kiwi()
+    tokens = kiwi.analyze(contents)[0][0]
+
+    # 명사를 저장할 집합
+    nouns = set()
+
+    # 각 토큰에 대해 명사 추출
+    for token in tokens:
+        if token.tag == "NNG":
+            nouns.add(token.form)
+    nouns = sorted(nouns)
+
+    # 명사 선택 위젯
+    selected_nouns = st.multiselect('빈칸으로 만들 명사를 선택하세요', list(nouns))
+    # '생성하기' 버튼
+    if st.button('빈칸 뚫기 미리보기2'):
+        # 체크된 명사를 빈칸으로 치환
+        for noun in selected_nouns:
+            contents = contents.replace(noun, '___'*len(noun))
+
+        # 결과 표시
+        st.write(contents)
+
+        # 워드 문서 생성
+        doc = docx.Document()
+        doc.add_paragraph(contents)
+        
+        # 워드 파일 다운로드
+        with BytesIO() as f:
+            doc.save(f)
+            f.seek(0)
+            st.download_button('워드 파일로 다운로드하기', f, file_name='학습지.docx')
+
+import re
+
 with tab2:
+
+    # 텍스트를 문장 단위로 분리
+    sentences = re.split(r'(?<=[.!?]) +', contents)
+
+    # 선택된 명사를 저장하는 세션 상태 초기화
+    if 'selected_nouns_dict' not in st.session_state:
+        st.session_state.selected_nouns_dict = {}
+
+    new_sentences = []
+
+    for i, sentence in enumerate(sentences):
+        # 형태소 분석으로 명사 추출
+        kiwi = Kiwi()
+        tokens = kiwi.analyze(sentence)[0][0]
+        nouns = [token.form for token in tokens if token.tag == "NNG"]
+
+        # 고유한 키를 가진 멀티셀렉트 생성
+        selected_nouns_key = f"selected_nouns_{i}"
+        selected_nouns = st.multiselect(f'"{sentence}"', nouns, key=selected_nouns_key)
+
+        # 선택된 명사를 세션 상태에 저장
+        st.session_state.selected_nouns_dict[selected_nouns_key] = selected_nouns
+
+        # 현재 문장에서 선택된 명사를 빈칸으로 치환
+        for noun in selected_nouns:
+            sentence = sentence.replace(noun, '___'*len(noun))
+
+        new_sentences.append(sentence)
+
+    # '생성하기' 버튼
+    if st.button('빈칸 뚫기 미리보기'):
+        # 업데이트된 텍스트 표시
+        st.write(' '.join(new_sentences))
+        # 워드 문서 생성
+        doc = docx.Document()
+        doc.add_paragraph(new_sentences)
+        
+        # 워드 파일 다운로드
+        with BytesIO() as f:
+            doc.save(f)
+            f.seek(0)
+            st.download_button('워드 파일로 다운로드하기', f, file_name='학습지.docx')
+with tab3:
     st.write("준비중입니다....")
     # # BERT 모델과 토크나이저 초기화
     # tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')

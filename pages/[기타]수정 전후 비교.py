@@ -14,23 +14,31 @@ with col2:
 # 텍스트 입력 받기
 text_before, text_after = st.columns(2)
 with text_before:
-    text1 = st.text_input("수정 전 텍스트를 입력해주세요.", value = "띄어쓰기안했쥐롱")
+    text1 = st.text_area("수정 전 텍스트를 입력해주세요.", value = "안녕하셰요!반 갑솝니다. ")
 with text_after:
-    text2 = st.text_input("수정 후 텍스트를 입력해주세요.", value = "띄어쓰기 했찌롱")
+    text2 = st.text_area("수정 후 텍스트를 입력해주세요.", value = "안녕하세요! 반갑습니다. ")
+
 
 # difflib를 사용하여 두 텍스트의 차이를 시각적으로 표시
-def show_diff(text1, text2):
+@st.cache_data
+def show_diff(text1, text2, font_size):
     diff = difflib.ndiff(text1, text2)
     diff_text = ""
     for c in diff:
         if c[0] == ' ':
             diff_text += c[2]
         elif c[0] == '-':
-            diff_text += f"<span style='color: red; font-weight: bold; text-decoration: line-through;'>{c[2]}</span>"
+            diff_text += f"<span style='color: red; background-color: #e9e9e9; font-weight: bold; font-size: {font_size}em; text-decoration: line-through;'>{c[2]}</span>"
         elif c[0] == '+':
-            diff_text += f"<span style='color: blue; font-weight: bold;'>{c[2]}</span>"
+            if c[2] == ' ':
+                diff_text += f"<span style='color: blue; background-color: yellow; font-weight: bold; font-size: {font_size}em; text-decoration: underline;'>v</span>"
+            else:
+                diff_text += f"<span style='color: blue; background-color: yellow; font-weight: bold; font-size: {font_size}em; text-decoration: underline;'>{c[2]}</span>"
     return diff_text
 
+font_size = st.number_input("수정할 부분을 얼마나 크게 나타낼까요?", value = 1.5)
+
 if st.button("비교하기"):
-    diff_result = show_diff(text1, text2)
+
+    diff_result = show_diff(text1, text2, font_size)
     st.markdown(diff_result, unsafe_allow_html=True)

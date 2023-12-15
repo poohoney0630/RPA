@@ -6,7 +6,7 @@ faker
 kiwi
 kiwipiepy
 python-pptx
-python-docx
+docx
 streamlit-cropper
 pillow
 pdf2image
